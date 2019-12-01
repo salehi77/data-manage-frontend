@@ -1,4 +1,5 @@
 import React from "react";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -19,9 +20,9 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "./../elements/listItems";
-import Chart from "./../elements/Chart";
-import Deposits from "./../elements/Deposits";
-import Orders from "./../elements/Orders";
+// import Chart from "./../elements/Chart";
+// import Deposits from "./../elements/Deposits";
+import Orders from "./../elements/ClinicsTable.jsx";
 
 function Copyright() {
   return (
@@ -119,6 +120,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Dashboard() {
+  let { path, url } = useRouteMatch();
+  console.log(`${path}edit`, url);
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -127,7 +131,7 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <div className={classes.root} style={{ fontFamily: "Times New Roman" }}>
@@ -186,20 +190,14 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid> */}
-
             <Grid item xs={12}>
               <Paper className={classes.paper}>
+                {/* <Switch>
+                  <Route exact path={path}>
+                    hello
+                  </Route>
+                  <Route path={`${path}/edit`}>desc</Route>
+                </Switch> */}
                 <Orders />
               </Paper>
             </Grid>
