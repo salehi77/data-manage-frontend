@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+import "@projectstorm/react-diagrams/dist/style.min.css";
+import "./assets/my_css.css";
+
 import { BrowserRouter, Route } from "react-router-dom";
 
 ReactDOM.render(

@@ -17,7 +17,7 @@ function App() {
           <DescriptionEdit />
         </Route>
 
-        <Route path="/edit/:id">
+        <Route path="/algo/:id">
           <Algorithm />
         </Route>
 
