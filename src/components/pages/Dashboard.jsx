@@ -192,12 +192,6 @@ export default function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                {/* <Switch>
-                  <Route exact path={path}>
-                    hello
-                  </Route>
-                  <Route path={`${path}/edit`}>desc</Route>
-                </Switch> */}
                 <Orders />
               </Paper>
             </Grid>

@@ -7,7 +7,7 @@ import Custom from "./components/pages/Custom";
 
 function App() {
   return (
-    <div dir="rtl" style={{ direction: "rtl" }}>
+    <div dir="rtl">
       <Switch>
         <Route exact path="/">
           <Dashboard />
