@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
     })
   },
   appBarShift: {
-    marginRight: drawerWidth,
+    marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     })
   },
   menuButton: {
-    marginLeft: 36
+    marginRight: 36
   },
   menuButtonHidden: {
     display: "none"
@@ -120,8 +120,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function Dashboard() {
-  let { path, url } = useRouteMatch();
-  console.log(`${path}edit`, url);
+  const theme = useTheme();
+  console.log(theme);
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -139,10 +139,11 @@ export default function Dashboard() {
       <AppBar
         position="absolute"
         className={clsx(classes.appBar, open && classes.appBarShift)}
+      // color="primary.light"
       >
         <Toolbar className={classes.toolbar}>
           <IconButton
-            edge="end"
+            edge="start"
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
@@ -169,6 +170,7 @@ export default function Dashboard() {
           </IconButton>
         </Toolbar>
       </AppBar>
+
       <Drawer
         variant="permanent"
         classes={{

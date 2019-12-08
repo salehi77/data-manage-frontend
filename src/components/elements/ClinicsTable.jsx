@@ -34,7 +34,7 @@ export default function Orders() {
           setDataRows(data.result);
           data.result.map(row => {
             let t = new Date(row.lastUpdate);
-            console.log(t.getTime());
+            // console.log(t.getTime());
           });
         } else {
           setDataRows([]);

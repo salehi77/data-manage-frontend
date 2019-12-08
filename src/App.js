@@ -5,25 +5,17 @@ import DescriptionEdit from "./components/pages/DescriptionEdit";
 import Algorithm from "./components/pages/Algorithm";
 import Custom from "./components/pages/Custom";
 
-function App() {
+function App(props) {
   return (
     <div dir="rtl">
       <Switch>
-        <Route exact path="/">
-          <Dashboard />
-        </Route>
+        <Route exact path="/" component={Dashboard} />
 
-        <Route path="/edit/:id">
-          <DescriptionEdit />
-        </Route>
+        <Route path="/edit/:id" component={DescriptionEdit} />
 
-        <Route path="/algo/:id">
-          <Algorithm />
-        </Route>
+        <Route path="/algo/:id" component={Algorithm} />
 
-        <Route path="/a">
-          <Custom />
-        </Route>
+        <Route path="/a" component={Custom} />
       </Switch>
     </div>
   );

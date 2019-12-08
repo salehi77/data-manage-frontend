@@ -22,3 +22,14 @@ export const getClinic = id => {
       return errorControl(error);
     });
 };
+
+export const updateDiagram = (id, diagramModel) => {
+  return api.clinic
+    .updateDiagram(id, diagramModel)
+    .then(data => {
+      return data;
+    })
+    .catch(error => {
+      return errorControl(error);
+    });
+};
