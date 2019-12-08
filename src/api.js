@@ -15,17 +15,19 @@ export default {
         return res.data;
       });
     },
-    updateClinicDescription: (id, newText) => {
+
+    updateDiagram: (id, diagramModel) => {
       return axios
-        .patch(serverUrl + "/update_clinic_description?id=" + id, { newText })
+        .patch(serverUrl + "/update_diagram", { id, diagramModel })
         .then(res => {
+          console.log(res)
           return res.data;
         });
     },
 
-    updateDiagram: (id, diagramModel) => {
+    addClinic: (clinicName) => {
       return axios
-        .patch(serverUrl + "/diagram", { id, diagramModel })
+        .post(serverUrl + "/add_clinic", { clinicName })
         .then(res => {
           return res.data;
         });

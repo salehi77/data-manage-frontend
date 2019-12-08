@@ -1,35 +1,59 @@
 import api from "../api";
 import { errorControl } from "./errorActions";
 
-export const getClinics = () => {
+export const getClinics = (data, options) => {
   return api.clinic
     .getClinics()
     .then(data => {
       return data;
     })
     .catch(error => {
-      return errorControl(error);
+      if (options.autoErrorControl)
+        return errorControl(error);
+      else
+        throw error
     });
 };
 
-export const getClinic = id => {
+export const getClinic = (data, options) => {
   return api.clinic
-    .getClinic(id)
+    .getClinic(data.clinicID)
     .then(data => {
       return data;
     })
     .catch(error => {
-      return errorControl(error);
+      if (options.autoErrorControl)
+        return errorControl(error);
+      else
+        throw error
     });
 };
 
-export const updateDiagram = (id, diagramModel) => {
+export const updateDiagram = (data, options) => {
+
   return api.clinic
-    .updateDiagram(id, diagramModel)
+    .updateDiagram(data.clinicID, data.diagramModel)
     .then(data => {
       return data;
     })
     .catch(error => {
-      return errorControl(error);
+      if (options.autoErrorControl)
+        return errorControl(error);
+      else
+        throw error
+    });
+};
+
+export const addClinic = (data, options) => {
+  return api.clinic
+    .addClinic(data.clinicName)
+    .then(data => {
+      return data;
+    })
+    .catch(error => {
+      if (options.autoErrorControl)
+        return errorControl(error);
+      else
+        throw error
     });
 };

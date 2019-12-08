@@ -9,7 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./assets/my_css.css";
 
 
-import purple from "@material-ui/core/colors/green";
+import green from "@material-ui/core/colors/green";
+import deepPurple from "@material-ui/core/colors/deepPurple";
 
 import { create } from "jss";
 import rtl from "jss-rtl";
@@ -29,15 +30,12 @@ const jss = create({
 
 const theme = createMuiTheme({
   palette: {
-    // primary: purple,
-    // secondary: {
-    //   main: "#f44336"
-    // },
-    type: "light",
+    primary: green,
+    secondary: deepPurple,
+    // type: "dark",
 
   },
   typography: {
-    // fontFamily: 'XM Yekan',
     fontFamily: 'Vazir'
   },
   direction: "rtl"

@@ -189,8 +189,8 @@ class Algorithm extends React.Component {
     const id = this.props.match.params.id;
     this.setState({ clinicID: id });
 
-    getClinic(id).then(data => {
-      console.log(data);
+    getClinic({ clinicID: id }, { autoErrorControl: true }).then(data => {
+
       if (data.success) {
         const engine = new SRD.DiagramEngine(),
           model = new SRD.DiagramModel();
@@ -235,7 +235,7 @@ class Algorithm extends React.Component {
         window.engine = engine;
         window.model = model;
       }
-    });
+    }).catch(err => { })
   }
 
   render() {
@@ -337,17 +337,16 @@ class Algorithm extends React.Component {
                       onClick={() => {
                         let jmodel = this.state.engine.diagramModel.serializeDiagram();
                         updateDiagram(
-                          this.state.clinicID,
-                          JSON.stringify(jmodel)
+                          { clinicID: this.state.clinicID, diagramModel: JSON.stringify(jmodel) },
+                          { autoErrorControl: true }
                         ).then(data => {
-                          // console.log(data);
                           if (data.success) {
                             console.log("success");
                             toast.success("تغییرات ذخیره شدند");
                           } else {
                             toast.error("یک خطای نامشخص رخ داده است");
                           }
-                        });
+                        }).catch(err => { })
                       }}
                     >
                       <ListItemIcon>
@@ -384,7 +383,6 @@ class Algorithm extends React.Component {
         </div>
 
         <Popover
-          style={{ padding: "2px 10px" }}
           id={
             Boolean(this.state.anchorElAddNode) ? "addnode-popover" : undefined
           }
@@ -465,6 +463,7 @@ class Algorithm extends React.Component {
             </Button>
           </FormControl>
         </Popover>
+
       </>
     );
   }
