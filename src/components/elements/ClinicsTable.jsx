@@ -28,6 +28,8 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AddIcon from '@material-ui/icons/Add';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
 
 import { getClinics, addClinic } from "../../actions/clinicActions";
 
@@ -159,13 +161,13 @@ export default function Orders() {
 
               <TableCell>
                 <Link to={`/edit/${row._id}`}>
-                  <EditIcon />
+                  <DescriptionOutlinedIcon color='secondary' />
                 </Link>
               </TableCell>
 
               <TableCell>
                 <Link to={`/algo/${row._id}`}>
-                  <EditIcon />
+                  <AccountTreeOutlinedIcon color='secondary' />
                 </Link>
               </TableCell>
             </TableRow>
@@ -209,13 +211,19 @@ export default function Orders() {
           />
           <Button
             onClick={() => {
-              console.log(texts);
-
               if (
                 texts.addRow !== ''
               ) {
-                console.log('add:)')
-                addClinic({ clinicName: 'namenamename' }, { autoErrorControl: true })
+                addClinic({ clinicName: texts.addRow }, { autoErrorControl: true })
+                  .then(data => {
+
+                    setAddRowAnchor(null)
+                    if (data.success) {
+                      let tempDataRows = [...dataRows]
+                      tempDataRows.push(data.result)
+                      setDataRows(tempDataRows)
+                    }
+                  }).catch(err => { })
               }
             }}
           >
