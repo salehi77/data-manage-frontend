@@ -1,7 +1,7 @@
 import api from "../api";
 import { errorControl } from "./errorActions";
 
-export const getClinics = (data, options) => {
+export const getClinics = (data, options = {}) => {
   return api.clinic
     .getClinics()
     .then(data => {
@@ -15,7 +15,7 @@ export const getClinics = (data, options) => {
     });
 };
 
-export const getClinic = (data, options) => {
+export const getClinic = (data, options = {}) => {
   return api.clinic
     .getClinic(data.clinicID)
     .then(data => {
@@ -29,7 +29,7 @@ export const getClinic = (data, options) => {
     });
 };
 
-export const updateDiagram = (data, options) => {
+export const updateDiagram = (data, options = {}) => {
 
   return api.clinic
     .updateDiagram(data.clinicID, data.diagramModel)
@@ -44,9 +44,23 @@ export const updateDiagram = (data, options) => {
     });
 };
 
-export const addClinic = (data, options) => {
+export const addClinic = (data, options = {}) => {
   return api.clinic
     .addClinic(data.clinicName)
+    .then(data => {
+      return data;
+    })
+    .catch(error => {
+      if (options.autoErrorControl)
+        return errorControl(error);
+      else
+        throw error
+    });
+};
+
+export const deleteClinic = (data, options = {}) => {
+  return api.clinic
+    .deleteClinic(data.clinicID)
     .then(data => {
       return data;
     })

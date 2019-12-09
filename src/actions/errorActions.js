@@ -27,9 +27,10 @@ export const errorControl = error => {
   switch (error.response.status) {
     case 400:
       toast.error("درخواست بد ارسال شده است");
+      break;
     case 404:
       toast.error("درخواست موردنظر در سرور پیدا نشد");
-      break
+      break;
     case 500:
       toast.error("در ارتباط با سرور مشکلی به وجود آمده است");
     default:

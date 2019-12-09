@@ -11,7 +11,7 @@ export default {
     },
 
     getClinic: id => {
-      return axios.get(serverUrl + "/get_clinic?id=" + id).then(res => {
+      return axios.get(serverUrl + "/get_clinic", { params: { id } }).then(res => {
         return res.data;
       });
     },
@@ -28,6 +28,14 @@ export default {
     addClinic: (clinicName) => {
       return axios
         .post(serverUrl + "/add_clinic", { clinicName })
+        .then(res => {
+          return res.data;
+        });
+    },
+
+    deleteClinic: (clinicID) => {
+      return axios
+        .delete(serverUrl + "/delete_clinic", { params: { id: clinicID } })
         .then(res => {
           return res.data;
         });

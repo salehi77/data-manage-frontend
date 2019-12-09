@@ -1,7 +1,5 @@
 import React from "react";
-// import Link from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
-import * as LinkM from "@material-ui/core/Link";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -10,84 +8,37 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-// import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import Title from "./Title";
-
-import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-// import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Popover from '@material-ui/core/Popover';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import AddIcon from '@material-ui/icons/Add';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
+import ClearIcon from '@material-ui/icons/Clear';
 
-import { getClinics, addClinic } from "../../actions/clinicActions";
+import { getClinics, addClinic, deleteClinic } from "../../actions/clinicActions";
+import { ConfirmDeleteDialog } from '../elements/MyDialogs'
 
 const useStyles = makeStyles(theme => ({
-  seeMore: {
-    marginTop: theme.spacing(3)
-  },
-
   grow: {
     flexGrow: 1,
-  },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    top: 0
-  },
-  inputRoot: {
-    color: 'inherit',
-    border: '1px solid rgba(0,0,0,0.2)',
-    borderRadius: 5,
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: 200,
-    },
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200
   },
+  alizarinColor: {
+    color: theme.palette.customeColors && theme.palette.customeColors.alizarin
+      ? theme.palette.customeColors.alizarin : '#e74c3c'
+  },
 }));
 
-const menuId = 'primary-search-account-menu';
-const mobileMenuId = 'primary-search-account-menu-mobile';
+
+
+
 
 
 export default function Orders() {
@@ -96,6 +47,7 @@ export default function Orders() {
   const [dataRows, setDataRows] = React.useState([]);
   const [addRowAnchor, setAddRowAnchor] = React.useState(null);
   const [texts, setTexts] = React.useState({ addRow: '' });
+  const [modals, setModals] = React.useState({ deleteClinic: null })
 
   React.useEffect(() => {
     getClinics({}, { autoErrorControl: true })
@@ -150,6 +102,7 @@ export default function Orders() {
             <TableCell>آخرین ویرایش</TableCell>
             <TableCell>ویرایش توضیحات</TableCell>
             <TableCell>ویرایش الگوریتم</TableCell>
+            <TableCell>حذف</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -170,6 +123,17 @@ export default function Orders() {
                   <AccountTreeOutlinedIcon color='secondary' />
                 </Link>
               </TableCell>
+
+              <TableCell>
+                <IconButton
+                  onClick={() => {
+                    setModals({ ...modals, deleteClinic: row._id })
+                  }}
+                >
+                  <ClearIcon className={classes.alizarinColor} />
+                </IconButton>
+              </TableCell>
+
             </TableRow>
           ))}
         </TableBody>
@@ -216,12 +180,9 @@ export default function Orders() {
               ) {
                 addClinic({ clinicName: texts.addRow }, { autoErrorControl: true })
                   .then(data => {
-
                     setAddRowAnchor(null)
                     if (data.success) {
-                      let tempDataRows = [...dataRows]
-                      tempDataRows.push(data.result)
-                      setDataRows(tempDataRows)
+                      setDataRows([...dataRows, data.result])
                     }
                   }).catch(err => { })
               }
@@ -232,6 +193,25 @@ export default function Orders() {
         </FormControl>
       </Popover>
 
+
+
+      <ConfirmDeleteDialog
+        open={Boolean(modals.deleteClinic)}
+        onClose={() => {
+          setModals({ ...modals, deleteClinic: null })
+        }}
+        onAccept={() => {
+          deleteClinic({ clinicID: modals.deleteClinic }, { autoErrorControl: true }).then(data => {
+            const clinicID = (data.result && data.result._id) ? data.result._id : modals.deleteClinic
+            const deletedIndex = dataRows.findIndex(dataRow => dataRow._id === clinicID)
+
+            if (deletedIndex !== -1) {
+              setDataRows([...dataRows.slice(0, deletedIndex), ...dataRows.slice(deletedIndex + 1)])
+            }
+            setModals({ ...modals, deleteClinic: null })
+          }).catch(err => { })
+        }}
+      />
 
 
 
