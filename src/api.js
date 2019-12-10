@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const serverUrl = "http://localhost:8000";
+// const serverUrl = "http://localhost:8000";
+const serverUrl = "https://data-manage-server.herokuapp.com";
+
+
 
 export default {
   clinic: {
