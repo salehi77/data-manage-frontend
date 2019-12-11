@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const serverURL = process.env.SERVER_URL || process.env.REACT_APP_SERVER_URL || 'http://localhost:8000'
+const serverURL = process.env.REACT_APP_SERVER_URL || process.env.REACT_APP_LOCAL_SERVER_URL || 'http://localhost:8000'
 
 console.log(process.env, serverURL)
 
