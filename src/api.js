@@ -1,27 +1,26 @@
 import axios from "axios";
 
-// const serverUrl = "http://localhost:8000";
-const serverUrl = "https://data-manage-server.herokuapp.com";
+const serverURL = process.env.SERVER_URL || process.env.REACT_APP_SERVER_URL || 'http://localhost:8000'
 
-
+console.log(process.env, serverURL)
 
 export default {
   clinic: {
     getClinics: () => {
-      return axios.get(serverUrl + "/get_clinics").then(res => {
+      return axios.get(serverURL + "/get_clinics").then(res => {
         return res.data;
       });
     },
 
     getClinic: id => {
-      return axios.get(serverUrl + "/get_clinic", { params: { id } }).then(res => {
+      return axios.get(serverURL + "/get_clinic", { params: { id } }).then(res => {
         return res.data;
       });
     },
 
     updateDiagram: (id, diagramModel) => {
       return axios
-        .patch(serverUrl + "/update_diagram", { id, diagramModel })
+        .patch(serverURL + "/update_diagram", { id, diagramModel })
         .then(res => {
           console.log(res)
           return res.data;
@@ -30,7 +29,7 @@ export default {
 
     addClinic: (clinicName) => {
       return axios
-        .post(serverUrl + "/add_clinic", { clinicName })
+        .post(serverURL + "/add_clinic", { clinicName })
         .then(res => {
           return res.data;
         });
@@ -38,7 +37,7 @@ export default {
 
     deleteClinic: (clinicID) => {
       return axios
-        .delete(serverUrl + "/delete_clinic", { params: { id: clinicID } })
+        .delete(serverURL + "/delete_clinic", { params: { id: clinicID } })
         .then(res => {
           return res.data;
         });
