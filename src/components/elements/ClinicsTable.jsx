@@ -30,10 +30,6 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     width: 200
   },
-  alizarinColor: {
-    color: theme.palette.customeColors && theme.palette.customeColors.alizarin
-      ? theme.palette.customeColors.alizarin : '#e74c3c'
-  },
 }));
 
 
@@ -52,6 +48,8 @@ export default function Orders() {
   React.useEffect(() => {
     getClinics({}, { autoErrorControl: true })
       .then(data => {
+        console.log(data.result)
+
         if (data.success) {
           setDataRows(data.result);
         } else {
@@ -100,26 +98,20 @@ export default function Orders() {
           <TableRow>
             <TableCell>نام</TableCell>
             <TableCell>آخرین ویرایش</TableCell>
-            <TableCell>ویرایش توضیحات</TableCell>
             <TableCell>ویرایش الگوریتم</TableCell>
             <TableCell>حذف</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {dataRows.map(row => (
-            <TableRow key={row._id}>
-              <TableCell>{row.name}</TableCell>
+            <TableRow key={row.id}>
+              <TableCell>{row.clinicName}</TableCell>
 
               <TableCell>{row.lastUpdate ? row.lastUpdate : "---"}</TableCell>
 
-              <TableCell>
-                <Link to={`/edit/${row._id}`}>
-                  <DescriptionOutlinedIcon color='secondary' />
-                </Link>
-              </TableCell>
 
               <TableCell>
-                <Link to={`/algo/${row._id}`}>
+                <Link to={`/algo/${row.id}`}>
                   <AccountTreeOutlinedIcon color='secondary' />
                 </Link>
               </TableCell>
@@ -127,10 +119,10 @@ export default function Orders() {
               <TableCell>
                 <IconButton
                   onClick={() => {
-                    setModals({ ...modals, deleteClinic: row._id })
+                    setModals({ ...modals, deleteClinic: { ...row } })
                   }}
                 >
-                  <ClearIcon className={classes.alizarinColor} />
+                  <ClearIcon className='alizarin' />
                 </IconButton>
               </TableCell>
 
@@ -196,20 +188,26 @@ export default function Orders() {
 
 
       <ConfirmDeleteDialog
+        name={modals.deleteClinic ? modals.deleteClinic.clinicName : ''}
         open={Boolean(modals.deleteClinic)}
         onClose={() => {
           setModals({ ...modals, deleteClinic: null })
         }}
         onAccept={() => {
-          deleteClinic({ clinicID: modals.deleteClinic }, { autoErrorControl: true }).then(data => {
-            const clinicID = (data.result && data.result._id) ? data.result._id : modals.deleteClinic
-            const deletedIndex = dataRows.findIndex(dataRow => dataRow._id === clinicID)
+          setModals({ ...modals, deleteClinic: null })
 
-            if (deletedIndex !== -1) {
-              setDataRows([...dataRows.slice(0, deletedIndex), ...dataRows.slice(deletedIndex + 1)])
-            }
-            setModals({ ...modals, deleteClinic: null })
-          }).catch(err => { })
+
+          deleteClinic({ clinicID: modals.deleteClinic && modals.deleteClinic.id }, { autoErrorControl: true })
+            .then(data => {
+
+              const clinicID = (data.result && data.result.id)
+              const deletedIndex = dataRows.findIndex(dataRow => dataRow.id === clinicID)
+
+              if (deletedIndex !== -1) {
+                setDataRows([...dataRows.slice(0, deletedIndex), ...dataRows.slice(deletedIndex + 1)])
+              }
+            })
+            .catch(err => { })
         }}
       />
 

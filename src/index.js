@@ -33,10 +33,6 @@ const theme = createMuiTheme({
     primary: green,
     secondary: deepPurple,
     // type: "dark",
-    customeColors: {
-      alizarin: '#e74c3c'
-    }
-
   },
   typography: {
     fontFamily: 'Vazir'

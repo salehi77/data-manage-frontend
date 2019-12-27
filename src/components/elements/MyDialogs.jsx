@@ -32,10 +32,6 @@ const useStyles = makeStyles(theme => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
-  alizarinColor: {
-    color: theme.palette.customeColors && theme.palette.customeColors.alizarin
-      ? theme.palette.customeColors.alizarin : '#e74c3c'
-  },
 }))
 
 
@@ -44,7 +40,7 @@ export const ConfirmDeleteDialog = (props) => {
 
   const classes = useStyles()
 
-  const { open, onClose, onAccept } = props
+  const { open, onClose, onAccept, name } = props
 
   return (
     <Dialog
@@ -60,7 +56,9 @@ export const ConfirmDeleteDialog = (props) => {
       >
 
         <Typography variant="h6">
-          آیا از حذف اطمینان دارید؟
+          آیا از حذف
+          {` ${name} `}
+          اطمینان دارید؟
         </Typography>
 
         {
@@ -88,7 +86,7 @@ export const ConfirmDeleteDialog = (props) => {
 
         <Button
           onClick={onAccept}
-          className={classes.alizarinColor}
+          className='alizarin'
         >
           بله
       </Button>

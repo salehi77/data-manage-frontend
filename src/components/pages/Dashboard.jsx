@@ -122,7 +122,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function Dashboard() {
   const theme = useTheme();
-  console.log(theme);
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
