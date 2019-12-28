@@ -189,53 +189,54 @@ class Algorithm extends React.Component {
     const id = this.props.match.params.id;
     this.setState({ clinicID: id });
 
-    getClinic({ clinicID: id }, { autoErrorControl: true }).then(data => {
+    getClinic({ clinicID: id }, { autoErrorControl: true })
+      .then(data => {
 
-      if (data.success) {
-        const engine = new SRD.DiagramEngine(),
-          model = new SRD.DiagramModel();
-        engine.installDefaultFactories();
+        if (data.success) {
+          const engine = new SRD.DiagramEngine(),
+            model = new SRD.DiagramModel();
+          engine.installDefaultFactories();
 
-        try {
-          model.deSerializeDiagram(
-            JSON.parse(data.result.diagramModel),
-            engine
-          );
-          for (let n in model.nodes) {
-            model.nodes[n].addListener({
+          try {
+            model.deSerializeDiagram(
+              JSON.parse(data.result.diagramModel),
+              engine
+            );
+            for (let n in model.nodes) {
+              model.nodes[n].addListener({
+                selectionChanged: this.handleSelected
+              });
+            }
+
+            engine.setDiagramModel(model);
+            this.setState({ engine });
+          } catch (exc) {
+            console.log(exc);
+            var root = new SRD.DefaultNodeModel("root", "rgb(0,192,255)");
+            let port1 = root.addOutPort("out");
+            root.setPosition(500, 100);
+            root.addListener({
               selectionChanged: this.handleSelected
             });
+
+            var node1 = new SRD.DefaultNodeModel("node1", "rgb(0,0,255)");
+            let port2 = node1.addInPort("in");
+            node1.addOutPort("out");
+            node1.setPosition(200, 100);
+            node1.addListener({
+              selectionChanged: this.handleSelected
+            });
+
+            model.addAll(root, node1);
+
+            engine.setDiagramModel(model);
+
+            this.setState({ engine, rootID: root.id });
           }
-
-          engine.setDiagramModel(model);
-          this.setState({ engine });
-        } catch (exc) {
-          console.log(exc);
-          var root = new SRD.DefaultNodeModel("root", "rgb(0,192,255)");
-          let port1 = root.addOutPort("out");
-          root.setPosition(500, 100);
-          root.addListener({
-            selectionChanged: this.handleSelected
-          });
-
-          var node1 = new SRD.DefaultNodeModel("node1", "rgb(0,0,255)");
-          let port2 = node1.addInPort("in");
-          node1.addOutPort("out");
-          node1.setPosition(200, 100);
-          node1.addListener({
-            selectionChanged: this.handleSelected
-          });
-
-          model.addAll(root, node1);
-
-          engine.setDiagramModel(model);
-
-          this.setState({ engine, rootID: root.id });
+          window.engine = engine;
+          window.model = model;
         }
-        window.engine = engine;
-        window.model = model;
-      }
-    }).catch(err => { })
+      }).catch(err => { })
   }
 
   render() {
@@ -243,8 +244,11 @@ class Algorithm extends React.Component {
 
     return (
       <>
+
         <div className={classes.root}>
+
           <CssBaseline />
+
           <AppBar
             position="absolute"
             className={clsx(classes.appBar, classes.appBarShift)}
@@ -271,11 +275,15 @@ class Algorithm extends React.Component {
           </AppBar>
 
           <main className={classes.content}>
+
             <div className={classes.appBarSpacer} />
 
             <Grid container>
+
               <Grid item xs={3}>
+
                 <Typography className={classes.toolbarTitle}>تغییر در دیاگرام</Typography>
+
                 <Divider />
 
                 <List>
@@ -339,14 +347,16 @@ class Algorithm extends React.Component {
                         updateDiagram(
                           { clinicID: this.state.clinicID, diagramModel: JSON.stringify(jmodel) },
                           { autoErrorControl: true }
-                        ).then(data => {
-                          if (data.success) {
-                            console.log("success");
-                            toast.success("تغییرات ذخیره شدند");
-                          } else {
-                            toast.error("یک خطای نامشخص رخ داده است");
-                          }
-                        }).catch(err => { })
+                        )
+                          .then(data => {
+                            if (data.success) {
+                              toast.success("تغییرات ذخیره شدند");
+                            }
+                            else {
+                              toast.error("یک خطای نامشخص رخ داده است");
+                            }
+                          })
+                          .catch(err => { })
                       }}
                     >
                       <ListItemIcon>
@@ -364,22 +374,30 @@ class Algorithm extends React.Component {
                     </ListItem>
                   </div>
                 </List>
+
               </Grid>
 
               <Grid item xs={9}>
                 <div className={classes.SRDWrapper}>
-                  {this.state.engine && (
-                    <SRD.DiagramWidget
-                      className="srd-diagram"
-                      diagramEngine={this.state.engine}
-                      maxNumberPointsPerLink="0"
-                      deleteKeys={[46]}
-                    />
-                  )}
+                  {
+                    this.state.engine
+                    &&
+                    (
+                      <SRD.DiagramWidget
+                        className="srd-diagram"
+                        diagramEngine={this.state.engine}
+                        maxNumberPointsPerLink="0"
+                        deleteKeys={[46]}
+                      />
+                    )
+                  }
                 </div>
               </Grid>
+
             </Grid>
+
           </main>
+
         </div>
 
         <Popover
