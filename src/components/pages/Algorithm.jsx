@@ -156,6 +156,7 @@ const useStyles2 = theme => {
 };
 
 class Algorithm extends React.Component {
+
   state = {
     clinicID: "",
     engine: null,
@@ -198,19 +199,27 @@ class Algorithm extends React.Component {
           engine.installDefaultFactories();
 
           try {
-            model.deSerializeDiagram(
-              JSON.parse(data.result.diagramModel),
-              engine
-            );
-            for (let n in model.nodes) {
-              model.nodes[n].addListener({
-                selectionChanged: this.handleSelected
-              });
-            }
+            let d = JSON.parse(data.result.diagramModel)
 
-            engine.setDiagramModel(model);
-            this.setState({ engine });
-          } catch (exc) {
+            if (d.rootID !== '') {
+              model.deSerializeDiagram(
+                JSON.parse(d.diagramModel),
+                engine
+              );
+              for (let n in model.nodes) {
+                model.nodes[n].addListener({
+                  selectionChanged: this.handleSelected
+                });
+              }
+
+              engine.setDiagramModel(model);
+              this.setState({ engine, rootID: d.rootID });
+            }
+            else {
+              throw new Error('Missed rootID')
+            }
+          }
+          catch (exc) {
             console.log(exc);
             var root = new SRD.DefaultNodeModel("root", "rgb(0,192,255)");
             let port1 = root.addOutPort("out");
@@ -235,12 +244,36 @@ class Algorithm extends React.Component {
           }
           window.engine = engine;
           window.model = model;
+
         }
-      }).catch(err => { })
+
+      })
+      .catch(err => { })
   }
+
+  saveDiagram = () => {
+    let jmodel = this.state.engine.diagramModel.serializeDiagram();
+
+    updateDiagram(
+      { clinicID: this.state.clinicID, rootID: this.state.rootID, diagramModel: JSON.stringify(jmodel) },
+      { autoErrorControl: true }
+    )
+      .then(data => {
+        if (data.success) {
+          toast.success("تغییرات ذخیره شدند");
+        }
+        else {
+          toast.error("یک خطای نامشخص رخ داده است");
+        }
+      })
+      .catch(err => { })
+  }
+
 
   render() {
     const { classes } = this.props;
+
+    console.log(this.state)
 
     return (
       <>
@@ -342,22 +375,7 @@ class Algorithm extends React.Component {
                     </ListItem>
                     <ListItem
                       button
-                      onClick={() => {
-                        let jmodel = this.state.engine.diagramModel.serializeDiagram();
-                        updateDiagram(
-                          { clinicID: this.state.clinicID, diagramModel: JSON.stringify(jmodel) },
-                          { autoErrorControl: true }
-                        )
-                          .then(data => {
-                            if (data.success) {
-                              toast.success("تغییرات ذخیره شدند");
-                            }
-                            else {
-                              toast.error("یک خطای نامشخص رخ داده است");
-                            }
-                          })
-                          .catch(err => { })
-                      }}
+                      onClick={this.saveDiagram}
                     >
                       <ListItemIcon>
                         <SaveIcon />
@@ -485,6 +503,8 @@ class Algorithm extends React.Component {
       </>
     );
   }
+
+
 }
 
 export default withStyles(useStyles2)(Algorithm);

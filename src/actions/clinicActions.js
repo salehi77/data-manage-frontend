@@ -32,7 +32,7 @@ export const getClinic = (data, options = {}) => {
 export const updateDiagram = (data, options = {}) => {
 
   return api.clinic
-    .updateDiagram(data.clinicID, data.diagramModel)
+    .updateDiagram(data.clinicID, data.rootID, data.diagramModel)
     .then(data => {
       return data;
     })
