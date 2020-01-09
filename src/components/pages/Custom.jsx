@@ -19,8 +19,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from '../elements/listItems';
-import Chart from '../elements/Chart';
-import Deposits from '../elements/Deposits';
 import Orders from '../elements/ClinicsTable';
 
 function Copyright() {
@@ -176,13 +174,13 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                {/* <Chart /> */}
               </Paper>
             </Grid>
             {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <Deposits />
+                {/* <Deposits /> */}
               </Paper>
             </Grid>
             {/* Recent Orders */}

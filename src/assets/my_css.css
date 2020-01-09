@@ -33,3 +33,7 @@
 .alizarin{
   color: #e74c3c !important;
 }
+
+html, body,#root, #root>div[dir]{
+  height: 100%;
+}
