@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import Orders from './../elements/ClinicsTable.jsx'
+import ClinicsTable from './../elements/ClinicsTable.jsx'
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
 
@@ -20,24 +20,24 @@ import { MyDrawer } from '../elements/MyDrawer'
 const useStyles = makeStyles(theme => ({
 
   appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto',
-  },
+  // content: {
+  //   flexGrow: 1,
+  //   height: '100vh',
+  //   overflow: 'auto',
+  // },
   container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
-  paper: {
+  paperTable: {
     padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'auto',
-    flexDirection: 'column',
+    // display: 'flex',
+    // overflow: 'auto',
+    // flexDirection: 'column',
   },
 }))
 
-export default function Dashboard(props) {
+const Dashboard = (props) => {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const handleDrawerOpen = (value) => {
@@ -64,7 +64,7 @@ export default function Dashboard(props) {
 
 
 
-      <main className={classes.content}>
+      <main style={{ flexGrow: 1 }}>
 
 
 
@@ -74,15 +74,22 @@ export default function Dashboard(props) {
 
 
         <Container maxWidth='lg' className={classes.container}>
-          <Grid container spacing={3}>
+
+
+          <Grid container spacing={1}>
+
+
             <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
+              <Paper className={classes.paperTable} elevation={3} >
+                <ClinicsTable />
               </Paper>
             </Grid>
-          </Grid>
-        </Container>
 
+
+          </Grid>
+
+
+        </Container>
 
 
       </main>
@@ -91,3 +98,5 @@ export default function Dashboard(props) {
     </div>
   )
 }
+
+export default Dashboard
