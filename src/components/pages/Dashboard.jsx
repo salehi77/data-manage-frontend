@@ -2,7 +2,6 @@ import React from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 import clsx from 'clsx'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import Drawer from '@material-ui/core/Drawer'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -20,20 +19,12 @@ import { MyDrawer } from '../elements/MyDrawer'
 const useStyles = makeStyles(theme => ({
 
   appBarSpacer: theme.mixins.toolbar,
-  // content: {
-  //   flexGrow: 1,
-  //   height: '100vh',
-  //   overflow: 'auto',
-  // },
   container: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
   },
   paperTable: {
     padding: theme.spacing(2),
-    // display: 'flex',
-    // overflow: 'auto',
-    // flexDirection: 'column',
   },
 }))
 
@@ -45,10 +36,9 @@ const Dashboard = (props) => {
   }
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
 
 
-      <CssBaseline />
 
 
 

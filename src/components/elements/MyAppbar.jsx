@@ -21,7 +21,8 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
-    })
+    }),
+    minHeight: 64,
   },
   appBarShifted: {
     width: `calc(100% - ${theme.spacing(30)}px)`,

@@ -2,11 +2,6 @@ import React from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 import clsx from 'clsx'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import Drawer from '@material-ui/core/Drawer'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import List from '@material-ui/core/List'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import Container from '@material-ui/core/Container'
@@ -16,31 +11,39 @@ import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
 import Draggable from 'react-draggable'
 
-
 const useStyles = makeStyles(theme => ({
 
-  appBarSpacer: theme.mixins.toolbar,
+  // appBarSpacer: theme.mixins.toolbar,
+  appBarSpacer: {
+    minHeight: 64,
+  },
   container: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    padding: 0,
   },
   paper: {
     padding: theme.spacing(2),
   },
+  fullHeight: {
+    minHeight: 'calc(100vh - 64px)',
+  }
 }))
+
+
 
 const Diagram = (props) => {
   const classes = useStyles()
   const [drawerOpen, setDrawerOpen] = React.useState(false)
+  const [yyy, setyyy] = React.useState({ scale: 1 })
   const handleDrawerOpen = (value) => {
     setDrawerOpen(value)
   }
 
+
+
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
 
 
-      <CssBaseline />
 
 
 
@@ -56,7 +59,7 @@ const Diagram = (props) => {
 
 
 
-      <main style={{ flexGrow: 1 }}>
+      <main style={{ flexGrow: 1, minHeight: '100vh' }}>
 
 
 
@@ -65,27 +68,97 @@ const Diagram = (props) => {
 
 
 
-        <Container maxWidth='lg' className={classes.container}>
+        <Container maxWidth={false} disablegutters className={classes.container}
+          style={{
+            // backgroundColor: 'blue',
+            height: 'calc(100% - 64px)',
+          }}
+        >
 
 
-          <Grid container spacing={1}>
+          <Grid container spacing={0} style={{ height: '100%' }}>
 
 
-            <Grid item xs={9} style={{ backgroundColor: 'orange' }}>
+            <Grid item xs={10}
+              style={{
+                overflow: 'hidden',
+              }}
+            >
 
-              iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-              iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-              iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-              iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii iiiiiiii
+              <Paper
+                style={{
+                  backgroundColor: 'rgb(60, 60, 60)',
+                  padding: 5,
+                  height: '100%',
+                  border: '1px solid #afaaaa',
+                }}
+                onWheel={(e) => {
+                  e.persist()
+                  console.log(e.deltaY)
 
+                  let scale = yyy.scale + e.deltaY * -0.01;
+                  // this.setState = Math.min(Math.max(.125, scale), 4);
+
+                  setyyy({ scale: Math.min(Math.max(.125, scale), 4) })
+
+                }}
+              >
+                <div
+                  style={{
+                    // backgroundColor: 'green',
+                    height: '100%',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    transform: `scale(${yyy.scale})`,
+                  }}
+                >
+
+
+                  <div
+                    style={{
+                      width: 100,
+                      height: 100,
+                      backgroundColor: 'red',
+                    }}
+                  >
+
+                  </div>
+
+
+                </div>
+
+              </Paper>
 
 
             </Grid>
 
-            <Grid item xs={3} style={{ backgroundColor: 'blue' }}>
+            <Grid item xs={2} style={{ backgroundColor: '' }}>
 
 
-              <Paper>
+              <Paper
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  // height: '90%',
+                  padding: '40px 4px',
+                  border: '1px solid rgba(0, 0, 0, .35)',
+                }}
+              >
+
+
+
+                <Draggable>
+                  <div
+                    style={{
+                      backgroundColor: 'green',
+                      height: 90,
+                      width: 90,
+                    }}
+                  >
+                  </div>
+                </Draggable>
 
 
 

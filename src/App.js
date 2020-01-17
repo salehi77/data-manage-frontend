@@ -5,6 +5,7 @@ import DescriptionEdit from "./components/pages/DescriptionEdit";
 import Algorithm from "./components/pages/Algorithm";
 import Custom from "./components/pages/Custom";
 import Diagram from './components/pages/Diagram'
+import CssBaseline from '@material-ui/core/CssBaseline'
 
 function App(props) {
 
@@ -12,9 +13,13 @@ function App(props) {
 
     <div dir="rtl">
 
+      <CssBaseline />
+
       <Switch>
 
-        <Route exact path="/" component={Diagram} />
+        <Route exact path="/" component={Dashboard} />
+
+        <Route exact path="/dg" component={Diagram} />
 
         <Route path="/edit/:id" component={DescriptionEdit} />
 
