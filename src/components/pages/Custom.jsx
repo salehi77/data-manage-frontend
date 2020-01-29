@@ -1,28 +1,61 @@
 import React from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
-import clsx from 'clsx'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
 
-const useStyles = makeStyles(theme => ({
-}))
 
+
+// var cols = document.querySelectorAll('#columns .column');
+// [].forEach.call(cols, function (col) {
+//   col.addEventListener('dragstart', handleDragStart, false);
+// });
 
 const Diagram = (props) => {
-  const classes = useStyles()
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const handleDrawerOpen = (value) => {
-    setDrawerOpen(value)
+
+  const [op, setop] = React.useState(1)
+
+  function onDragStart(event) {
+    event.persist()
+    window.e = event
+    console.log('start')
+    event
+      .dataTransfer
+      .setData('text/plain', event.target.id);
   }
 
+  function onDragOver(event) {
+    console.log('over')
+    event.preventDefault();
+  }
 
+  function onDrop(event) {
+    const id = event
+      .dataTransfer
+      .getData('text');
+
+    const draggableElement = document.getElementById(id);
+    const dropzone = event.target;
+
+    dropzone.appendChild(draggableElement);
+
+    event
+      .dataTransfer
+      .clearData();
+  }
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div>
 
-      custom
-      
-      
-      
+      <div className='parent'>
+        <span id='draggableSpan'
+          draggable='true'
+          onDragStart={onDragStart}
+        >
+          draggable
+        </span>
+        <span
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        > dropzone </span>
+      </div>
+
     </div>
   )
 }

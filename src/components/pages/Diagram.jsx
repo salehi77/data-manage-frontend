@@ -11,36 +11,28 @@ import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
 import Draggable from 'react-draggable'
 
-const useStyles = makeStyles(theme => ({
-
-  // appBarSpacer: theme.mixins.toolbar,
-  appBarSpacer: {
-    minHeight: 64,
-  },
-  container: {
-    padding: 0,
-  },
-  paper: {
-    padding: theme.spacing(2),
-  },
-  fullHeight: {
-    minHeight: 'calc(100vh - 64px)',
-  }
-}))
 
 
 
 const Diagram = (props) => {
-  const classes = useStyles()
+
   const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const [yyy, setyyy] = React.useState({ scale: 1 })
+
   const handleDrawerOpen = (value) => {
     setDrawerOpen(value)
   }
 
 
+  const [zoom, setzoom] = React.useState(1)
+  const [move, setmove] = React.useState({ x: 0, y: 0, enable: false })
+
+  const [childs, setchilds] = React.useState([{}, {}, {}, {}, {}, {}])
+
+
 
   return (
+
+
     <div style={{ display: 'flex', height: '100%' }}>
 
 
@@ -63,14 +55,14 @@ const Diagram = (props) => {
 
 
 
-        <div className={classes.appBarSpacer} />
+        <div style={{ minHeight: 64 }} />
 
 
 
 
-        <Container maxWidth={false} disablegutters className={classes.container}
+        <Container maxWidth={false}
           style={{
-            // backgroundColor: 'blue',
+            padding: 0,
             height: 'calc(100% - 64px)',
           }}
         >
@@ -79,52 +71,69 @@ const Diagram = (props) => {
           <Grid container spacing={0} style={{ height: '100%' }}>
 
 
-            <Grid item xs={10}
-              style={{
-                overflow: 'hidden',
-              }}
-            >
+            <Grid item xs={10}>
 
               <Paper
                 style={{
                   backgroundColor: 'rgb(60, 60, 60)',
-                  padding: 5,
                   height: '100%',
-                  border: '1px solid #afaaaa',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  cursor: 'move',
                 }}
                 onWheel={(e) => {
                   e.persist()
-                  console.log(e.deltaY)
-
-                  let scale = yyy.scale + e.deltaY * -0.01;
-                  // this.setState = Math.min(Math.max(.125, scale), 4);
-
-                  setyyy({ scale: Math.min(Math.max(.125, scale), 4) })
-
+                  let scale = zoom + e.deltaY * -0.01;
+                  setzoom(Math.min(Math.max(.2, scale), 2))
+                }}
+                onMouseDown={() => {
+                  setmove({ ...move, enable: true })
+                }}
+                onMouseUp={() => {
+                  setmove({ ...move, enable: false })
+                }}
+                onMouseMove={e => {
+                  if (move.enable) {
+                    e.persist()
+                    setmove({ x: move.x + e.movementX, y: move.y + e.movementY, enable: move.enable })
+                  }
                 }}
               >
                 <div
                   style={{
-                    // backgroundColor: 'green',
+                    backgroundColor: 'green',
                     height: '100%',
                     width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    transform: `scale(${yyy.scale})`,
+                    transform: `scale(${zoom}) translate(${move.x}px, ${move.y}px)`,
+                    position: 'relative',
                   }}
                 >
 
 
-                  <div
-                    style={{
-                      width: 100,
-                      height: 100,
-                      backgroundColor: 'red',
-                    }}
-                  >
+                  {
+                    childs.map((child, index) => {
+                      return (
+                        <div
+                          style={{
+                            minWidth: 100,
+                            maxWidth: 150,
+                            minHeight: 100,
+                            fontSize: 18,
+                            overflowWrap: 'break-word',
+                            backgroundColor: 'red',
+                            position: 'absolute',
+                            top: index * 150,
+                            left: index * 150,
+                          }}
+                        >
+                          actual size of a square is depend on it's width and height jdkfslsdfsleflsdf5sdf6sdf
+                        </div>
+                      )
+                    })
+                  }
 
-                  </div>
+
+
 
 
                 </div>
@@ -134,14 +143,13 @@ const Diagram = (props) => {
 
             </Grid>
 
-            <Grid item xs={2} style={{ backgroundColor: '' }}>
+            <Grid item xs={2}>
 
 
               <Paper
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
-                  // height: '90%',
                   padding: '40px 4px',
                   border: '1px solid rgba(0, 0, 0, .35)',
                 }}
@@ -149,16 +157,16 @@ const Diagram = (props) => {
 
 
 
-                <Draggable>
-                  <div
-                    style={{
-                      backgroundColor: 'green',
-                      height: 90,
-                      width: 90,
-                    }}
-                  >
-                  </div>
-                </Draggable>
+                <div
+                  style={{
+                    backgroundColor: 'green',
+                    height: 90,
+                    width: 90,
+                  }}
+                  draggable
+                >
+                </div>
+
 
 
 
