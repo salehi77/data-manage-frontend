@@ -1,15 +1,13 @@
 import React from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
-import clsx from 'clsx'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
+
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
-import Draggable from 'react-draggable'
+import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 
 
 
@@ -23,10 +21,16 @@ const Diagram = (props) => {
   }
 
 
-  const [zoom, setzoom] = React.useState(1)
-  const [move, setmove] = React.useState({ x: 0, y: 0, enable: false })
 
-  const [childs, setchilds] = React.useState([{}, {}, {}, {}, {}, {}])
+  const [board, setboard] = React.useState({ scale: 1, x: 0, y: 0 })
+
+  const [movingIndex, setmovingIndex] = React.useState(null)
+  const [selectingIndex, setselectingIndex] = React.useState(null)
+
+  const [childs, setchilds] = React.useState([
+    { text: 'dlf hkskf sdlf hkihg  kjhk lds hkskf sdlf hkihg  kjhk ldskf sdlf hkijhgj', top: 100, left: 500 },
+    { text: 'dlf hkskf sdlf hkihg  kjhk ldskf sdlf hkijhgj', top: 200, left: 100 },
+  ])
 
 
 
@@ -60,7 +64,8 @@ const Diagram = (props) => {
 
 
 
-        <Container maxWidth={false}
+        <Container
+          maxWidth={false}
           style={{
             padding: 0,
             height: 'calc(100% - 64px)',
@@ -77,34 +82,53 @@ const Diagram = (props) => {
                 style={{
                   backgroundColor: 'rgb(60, 60, 60)',
                   height: '100%',
-                  position: 'relative',
                   overflow: 'hidden',
                   cursor: 'move',
                 }}
                 onWheel={(e) => {
                   e.persist()
-                  let scale = zoom + e.deltaY * -0.01;
-                  setzoom(Math.min(Math.max(.2, scale), 2))
+                  setboard({ ...board, scale: Math.min(Math.max(.2, board.scale + e.deltaY * -0.01), 2) })
                 }}
                 onMouseDown={() => {
-                  setmove({ ...move, enable: true })
+                  setmovingIndex(-1)
+                  setselectingIndex(null)
                 }}
                 onMouseUp={() => {
-                  setmove({ ...move, enable: false })
+                  setmovingIndex(null)
                 }}
                 onMouseMove={e => {
-                  if (move.enable) {
+                  if (movingIndex !== null) {
                     e.persist()
-                    setmove({ x: move.x + e.movementX, y: move.y + e.movementY, enable: move.enable })
+                    if (movingIndex === -1) {
+                      setboard({
+                        ...board,
+                        x: board.x + e.movementX * (1 / board.scale),
+                        y: board.y + e.movementY * (1 / board.scale),
+
+                      })
+                    }
+                    else {
+                      let c = childs[movingIndex]
+                      c = {
+                        ...c,
+                        top: c.top + e.movementY * (1 / board.scale),
+                        left: c.left + e.movementX * (1 / board.scale),
+                      }
+                      setchilds([
+                        ...childs.slice(0, movingIndex),
+                        c,
+                        ...childs.slice(movingIndex + 1)
+                      ])
+                    }
                   }
                 }}
               >
                 <div
                   style={{
-                    backgroundColor: 'green',
+                    // backgroundColor: 'green',
                     height: '100%',
                     width: '100%',
-                    transform: `scale(${zoom}) translate(${move.x}px, ${move.y}px)`,
+                    transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
                     position: 'relative',
                   }}
                 >
@@ -112,25 +136,81 @@ const Diagram = (props) => {
 
                   {
                     childs.map((child, index) => {
+
+
                       return (
+
                         <div
+
                           style={{
-                            minWidth: 100,
-                            maxWidth: 150,
+                            width: 150,
                             minHeight: 100,
                             fontSize: 18,
                             overflowWrap: 'break-word',
+                            whiteSpace: 'pre-wrap',
                             backgroundColor: 'red',
                             position: 'absolute',
-                            top: index * 150,
-                            left: index * 150,
+                            top: child.top,
+                            left: child.left,
                           }}
+
+
+                          onMouseDown={(e) => {
+                            e.stopPropagation()
+                            selectingIndex === null && setmovingIndex(index)
+                          }}
+
+                          onDoubleClick={() => {
+                            setselectingIndex(index)
+                          }}
+
+
+
                         >
-                          actual size of a square is depend on it's width and height jdkfslsdfsleflsdf5sdf6sdf
+
+                          {
+
+                            index !== selectingIndex
+
+                              ?
+
+                              <>
+                                {child.text}
+                              </>
+
+                              :
+
+                              <TextareaAutosize
+                                style={{
+                                  width: 'inherit',
+                                  fontSize: 'inherit',
+                                  fontFamily: 'inherit',
+                                  backgroundColor: 'inherit',
+                                  outline: 'none',
+                                  resize: 'none',
+                                  border: 'none',
+                                }}
+                                autoFocus
+                                onChange={e => {
+                                  e.persist()
+                                  setchilds([...childs.slice(0, index), { ...child, text: e.target.value }, ...childs.slice(index + 1)])
+                                }}
+                                onMouseUp={e => e.stopPropagation()}
+                              >
+                                {child.text}
+                              </TextareaAutosize>
+
+                          }
+
                         </div>
                       )
+
+
+
                     })
+
                   }
+
 
 
 

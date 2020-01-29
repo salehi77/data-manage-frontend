@@ -1,5 +1,4 @@
 import { ToastContainer, toast } from "react-toastify";
-import { css } from "glamor";
 
 toast.configure({
   position: "top-left",

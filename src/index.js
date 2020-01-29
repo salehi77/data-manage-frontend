@@ -4,7 +4,6 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter, Route } from "react-router-dom";
 
-import "@projectstorm/react-diagrams/dist/style.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/my_css.css";
 
@@ -32,7 +31,6 @@ const theme = createMuiTheme({
   palette: {
     primary: green,
     secondary: deepPurple,
-    // type: "dark",
   },
   typography: {
     fontFamily: 'Vazir'
