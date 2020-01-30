@@ -4,6 +4,7 @@ import Dashboard from "./components/pages/Dashboard";
 import DescriptionEdit from "./components/pages/DescriptionEdit";
 import Custom from "./components/pages/Custom";
 import Diagram from './components/pages/Diagram'
+import Algo from './components/pages/Algorithm'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
 function App(props) {
@@ -19,6 +20,8 @@ function App(props) {
         <Route exact path="/" component={Dashboard} />
 
         <Route exact path="/dg" component={Diagram} />
+
+        <Route exact path="/algo/:id" component={Algo} />
 
         <Route path="/edit/:id" component={DescriptionEdit} />
 

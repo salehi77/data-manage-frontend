@@ -25,11 +25,17 @@ const Diagram = (props) => {
   const [board, setboard] = React.useState({ scale: 1, x: 0, y: 0 })
 
   const [movingIndex, setmovingIndex] = React.useState(null)
+  const [editingIndex, seteditingIndex] = React.useState(null)
   const [selectingIndex, setselectingIndex] = React.useState(null)
 
   const [childs, setchilds] = React.useState([
-    { text: 'dlf hkskf sdlf hkihg  kjhk lds hkskf sdlf hkihg  kjhk ldskf sdlf hkijhgj', top: 100, left: 500 },
-    { text: 'dlf hkskf sdlf hkihg  kjhk ldskf sdlf hkijhgj', top: 200, left: 100 },
+    { text: 'اولین فرزند', left: 100, top: 100 },
+    { text: 'دومین فرزند', left: 400, top: 200 },
+    { text: 'سومین فرزند', left: 300, top: 500 },
+  ])
+
+  const [links, setlinks] = React.useState([
+    { from: 0, to: 1 }, { from: 0, to: 2 },
   ])
 
 
@@ -64,6 +70,7 @@ const Diagram = (props) => {
 
 
 
+
         <Container
           maxWidth={false}
           style={{
@@ -76,7 +83,12 @@ const Diagram = (props) => {
           <Grid container spacing={0} style={{ height: '100%' }}>
 
 
+
+
             <Grid item xs={10}>
+
+
+
 
               <Paper
                 style={{
@@ -91,6 +103,7 @@ const Diagram = (props) => {
                 }}
                 onMouseDown={() => {
                   setmovingIndex(-1)
+                  seteditingIndex(null)
                   setselectingIndex(null)
                 }}
                 onMouseUp={() => {
@@ -122,95 +135,156 @@ const Diagram = (props) => {
                     }
                   }
                 }}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => {
+                  const v = e.dataTransfer.getData('foo');
+                  if (v === 'panel')
+                    setchilds([...childs, { text: '', top: 0, left: 0 }])
+                  e.dataTransfer.clearData()
+                }}
               >
+
+
                 <div
                   style={{
-                    // backgroundColor: 'green',
                     height: '100%',
                     width: '100%',
-                    transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
                     position: 'relative',
                   }}
                 >
 
 
-                  {
-                    childs.map((child, index) => {
 
 
-                      return (
+                  <svg
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
+                      position: 'absolute',
+                      overflow: 'visible',
+                    }}
+                  >
 
-                        <div
+                    {
 
-                          style={{
-                            width: 150,
-                            minHeight: 100,
-                            fontSize: 18,
-                            overflowWrap: 'break-word',
-                            whiteSpace: 'pre-wrap',
-                            backgroundColor: 'red',
-                            position: 'absolute',
-                            top: child.top,
-                            left: child.left,
-                          }}
+                      links.map((link, index) => {
+                        return (
+                          <path
+                            key={index} fill="transparent" stroke="#9e9e9e" strokeWidth="3"
+                            d={`M ${childs[link.from].left + 75} ${childs[link.from].top + 50} L ${childs[link.to].left + 75} ${childs[link.to].top + 50}`}
+                          />
+                        )
+                      })
 
+                    }
 
-                          onMouseDown={(e) => {
-                            e.stopPropagation()
-                            selectingIndex === null && setmovingIndex(index)
-                          }}
-
-                          onDoubleClick={() => {
-                            setselectingIndex(index)
-                          }}
+                  </svg>
 
 
 
-                        >
-
-                          {
-
-                            index !== selectingIndex
-
-                              ?
-
-                              <>
-                                {child.text}
-                              </>
-
-                              :
-
-                              <TextareaAutosize
-                                style={{
-                                  width: 'inherit',
-                                  fontSize: 'inherit',
-                                  fontFamily: 'inherit',
-                                  backgroundColor: 'inherit',
-                                  outline: 'none',
-                                  resize: 'none',
-                                  border: 'none',
-                                }}
-                                autoFocus
-                                onChange={e => {
-                                  e.persist()
-                                  setchilds([...childs.slice(0, index), { ...child, text: e.target.value }, ...childs.slice(index + 1)])
-                                }}
-                                onMouseUp={e => e.stopPropagation()}
-                              >
-                                {child.text}
-                              </TextareaAutosize>
-
-                          }
-
-                        </div>
-                      )
 
 
 
-                    })
 
-                  }
+                  <div
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
+                      position: 'absolute',
+                    }}
+                  >
 
+
+
+
+
+                    {
+                      childs.map((child, index) => {
+
+
+                        return (
+
+                          <div
+                            key={index}
+                            style={{
+                              width: 150,
+                              minHeight: 100,
+                              fontSize: 18,
+                              overflowWrap: 'break-word',
+                              whiteSpace: 'pre-wrap',
+                              backgroundColor: editingIndex === index ? '#ecf0f1' : '#2ecc71',
+                              position: 'absolute',
+                              top: child.top,
+                              left: child.left,
+                              borderRadius: 5,
+                              padding: 5,
+                              border: `3px solid ${selectingIndex === index ? '#2980b9' : '#000'}`,
+                            }}
+
+
+                            onMouseDown={(e) => {
+                              if (editingIndex === null || editingIndex === index) {
+                                e.stopPropagation()
+                              }
+                              if (editingIndex === null) {
+                                setmovingIndex(index)
+                                setselectingIndex(index)
+                              }
+                            }}
+
+                            onDoubleClick={() => {
+                              seteditingIndex(index)
+                            }}
+
+                          >
+
+                            {
+
+                              index !== editingIndex
+
+                                ?
+
+                                <>
+                                  {child.text}
+                                </>
+
+                                :
+
+                                <TextareaAutosize
+                                  style={{
+                                    width: '100%',
+                                    fontSize: 'inherit',
+                                    fontFamily: 'inherit',
+                                    backgroundColor: 'inherit',
+                                    outline: 'none',
+                                    resize: 'none',
+                                    border: 'none',
+                                  }}
+                                  autoFocus
+                                  defaultValue={child.text}
+                                  onChange={e => {
+                                    e.persist()
+                                    setchilds([...childs.slice(0, index), { ...child, text: e.target.value }, ...childs.slice(index + 1)])
+                                  }}
+                                />
+
+                            }
+
+
+                          </div>
+
+
+                        )
+
+
+
+                      })
+
+                    }
+
+                  </div>
 
 
 
@@ -222,6 +296,10 @@ const Diagram = (props) => {
 
 
             </Grid>
+
+
+
+
 
             <Grid item xs={2}>
 
@@ -244,6 +322,7 @@ const Diagram = (props) => {
                     width: 90,
                   }}
                   draggable
+                  onDragStart={e => e.dataTransfer.setData('foo', 'panel')}
                 >
                 </div>
 
@@ -257,7 +336,12 @@ const Diagram = (props) => {
             </Grid>
 
 
+
+
+
           </Grid>
+
+
 
 
         </Container>
@@ -268,7 +352,7 @@ const Diagram = (props) => {
       </main>
 
 
-    </div>
+    </div >
   )
 }
 

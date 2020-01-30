@@ -1,4 +1,4 @@
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 toast.configure({
   position: "top-left",
@@ -32,6 +32,7 @@ export const errorControl = error => {
       break;
     case 500:
       toast.error("در ارتباط با سرور مشکلی به وجود آمده است");
+      break;
     default:
       toast.error("خطا");
   }

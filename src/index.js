@@ -20,6 +20,7 @@ import {
   jssPreset
 } from "@material-ui/core/styles";
 
+import "@projectstorm/react-diagrams/dist/style.min.css";
 
 
 
