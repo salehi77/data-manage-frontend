@@ -111,7 +111,7 @@ export default function Orders() {
 
 
               <TableCell>
-                <Link to={`/algo/${row.id}`}>
+                <Link to={`/dg/${row.id}`}>
                   <AccountTreeOutlinedIcon color='secondary' />
                 </Link>
               </TableCell>

@@ -17,7 +17,6 @@ import { MyDrawer } from '../elements/MyDrawer'
 
 
 const useStyles = makeStyles(theme => ({
-
   appBarSpacer: theme.mixins.toolbar,
   container: {
     paddingTop: theme.spacing(2),
@@ -27,6 +26,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
   },
 }))
+
 
 const Dashboard = (props) => {
   const classes = useStyles()

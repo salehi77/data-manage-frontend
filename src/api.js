@@ -18,9 +18,9 @@ export default {
       });
     },
 
-    updateDiagram: (id, rootID, diagramModel) => {
+    saveDiagram: (id, diagramModel) => {
       return axios
-        .patch(serverURL + "/update_diagram", { id, rootID, diagramModel })
+        .patch(serverURL + "/save_diagram", { id, diagramModel })
         .then(res => {
           console.log(res)
           return res.data;

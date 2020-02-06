@@ -1,7 +1,8 @@
 import React from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route, Link, useParams } from 'react-router-dom'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
 import hash from 'object-hash'
+import { toast } from 'react-toastify';
 
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
@@ -11,12 +12,19 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize'
 import Divider from '@material-ui/core/Divider'
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button'
+import Badge from '@material-ui/core/Badge'
 import IconButton from '@material-ui/core/IconButton'
 import ShareIcon from '@material-ui/icons/Share'
 import CloseIcon from '@material-ui/icons/Close'
+import SaveIcon from '@material-ui/icons/SaveRounded'
+import InfoIcon from '@material-ui/icons/Info'
+
+import { getClinic, saveDiagram } from '../../actions/clinicActions'
 
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
+
+
 
 
 
@@ -26,6 +34,16 @@ const Diagram = (props) => {
 
   const handleDrawerOpen = (value) => {
     setDrawerOpen(value)
+  }
+
+  const saveAction = () => {
+
+    // toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> یسنتیب منسیب سیب تسمنیبت </div>)
+
+    saveDiagram({ clinicID: 'iii', diagramModel: { childs, links } }, { autoErrorControl: true })
+      .then(data => {
+        console.log(data)
+      })
   }
 
 
@@ -38,21 +56,28 @@ const Diagram = (props) => {
 
   const [linkMode, setlinkMode] = React.useState(null)
 
-  // const [childs, setchilds] = React.useState([
-  //   { id: '57ee306acb6bd02c4ee14890622db5e970a57f86', text: 'اولین فرزند', left: 100, top: 100 },
-  //   { id: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554', text: 'دومین فرزند', left: 400, top: 200 },
-  //   { id: '860017cbd3513b593c26dce44791656a579ebd8a', text: 'سومین فرزند', left: 300, top: 500 },
-  // ])
   const [childs, setchilds] = React.useState([
-    { id: '57ee306acb6bd02c4ee14890622db5e970a57f86', text: 'پیوند کلیه', left: 500, top: 300 },
-    { id: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554', text: 'بلافاصله بعد از عمل', left: 100, top: 200 },
-    { id: '860017cbd3513b593c26dce44791656a579ebd8a', text: 'با فاصله بعد از عمل', left: 100, top: 500 },
+    { id: '57ee306acb6bd02c4ee14890622db5e970a57f86', text: 'اولین فرزند', left: 500, top: 300, root: true },
+    { id: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554', text: 'دومین فرزند', left: 100, top: 200 },
+    { id: '860017cbd3513b593c26dce44791656a579ebd8a', text: 'سومین فرزند', left: 100, top: 500 },
   ])
-
   const [links, setlinks] = React.useState([
-    // { from: '57ee306acb6bd02c4ee14890622db5e970a57f86', to: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554' },
+    { from: '57ee306acb6bd02c4ee14890622db5e970a57f86', to: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554' },
     { from: '57ee306acb6bd02c4ee14890622db5e970a57f86', to: '860017cbd3513b593c26dce44791656a579ebd8a' },
   ])
+
+  const { id: clinicID } = useParams()
+
+
+  React.useEffect(() => {
+
+    getClinic({ clinicID: clinicID }, { autoErrorControl: true })
+      .then(data => {
+        console.log(data)
+      })
+  }, [])
+
+
 
 
 
@@ -246,8 +271,6 @@ const Diagram = (props) => {
                               padding: 5,
                               border: `3px solid ${selectingId === child.id ? '#2980b9' : '#000'}`,
                             }}
-
-
                             onMouseDown={(e) => {
                               if (editingId === null || editingId === child.id) {
                                 e.stopPropagation()
@@ -257,11 +280,9 @@ const Diagram = (props) => {
                                 setselectingId(child.id)
                               }
                             }}
-
                             onDoubleClick={() => {
                               seteditingId(child.id)
                             }}
-
                             onClick={() => {
                               if (linkMode) {
                                 if (linkMode === 1)
@@ -272,8 +293,9 @@ const Diagram = (props) => {
                                 }
                               }
                             }}
-
                           >
+
+                            {child.root && <div className='mbadge'>ریشه</div>}
 
                             {
 
@@ -306,6 +328,7 @@ const Diagram = (props) => {
                                 />
 
                             }
+
 
 
                           </div>
@@ -397,9 +420,14 @@ const Diagram = (props) => {
                   onClick={() => {
                     let i = childs.findIndex(child => child.id === selectingId)
                     if (i > -1) {
-                      let c = [...childs]
-                      c.splice(i, 1)
-                      setchilds(c)
+                      if (childs[i].root) {
+                        toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> ریشه را نمی‌توان حذف کرد </div>)
+                      }
+                      else {
+                        let c = [...childs]
+                        c.splice(i, 1)
+                        setchilds(c)
+                      }
                     }
                   }}
                 >
@@ -411,6 +439,18 @@ const Diagram = (props) => {
 
                 </IconButton>
 
+
+                <Divider style={{ width: '100%', margin: '20px 0 30px' }} />
+
+
+                <Button
+                  variant="contained"
+                  size="large"
+                  startIcon={<SaveIcon />}
+                  onClick={saveAction}
+                >
+                  ذخیره
+                </Button>
 
 
 

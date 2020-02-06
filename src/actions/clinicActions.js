@@ -29,10 +29,9 @@ export const getClinic = (data, options = {}) => {
     });
 };
 
-export const updateDiagram = (data, options = {}) => {
-
+export const saveDiagram = (data, options = {}) => {
   return api.clinic
-    .updateDiagram(data.clinicID, data.rootID, data.diagramModel)
+    .saveDiagram(data.clinicID, data.diagramModel)
     .then(data => {
       return data;
     })

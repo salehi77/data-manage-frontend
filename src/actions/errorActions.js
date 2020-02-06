@@ -1,16 +1,5 @@
 import { toast } from "react-toastify";
 
-toast.configure({
-  position: "top-left",
-  autoClose: 3000,
-  hideProgressBar: true,
-  newestOnTop: false,
-  closeOnClick: true,
-  rtl: true,
-  pauseOnVisibilityChange: true,
-  draggable: true,
-  pauseOnHover: true
-});
 
 export const errorControlDispatch = error => (dispatch, getState) => { };
 
