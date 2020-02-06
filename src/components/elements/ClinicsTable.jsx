@@ -1,13 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { fade, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import hash from 'object-hash'
+
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import FormControl from '@material-ui/core/FormControl';
@@ -18,7 +20,7 @@ import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 
-import { getClinics, addClinic, deleteClinic } from "../../actions/clinicActions";
+import { getClinics, addClinic, deleteClinic } from '../../actions/clinicActions';
 import { ConfirmDeleteDialog } from '../elements/MyDialogs'
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +67,7 @@ export default function Orders() {
 
       <Toolbar >
 
-        <Typography color='primary' className={classes.title} variant="h6" noWrap>
+        <Typography color='primary' className={classes.title} variant='h6' noWrap>
           کلینیک‌ها
         </Typography>
 
@@ -93,7 +95,7 @@ export default function Orders() {
 
 
 
-      <Table size="small">
+      <Table size='small'>
         <TableHead>
           <TableRow>
             <TableCell>نام</TableCell>
@@ -107,7 +109,7 @@ export default function Orders() {
             <TableRow key={row.id}>
               <TableCell>{row.clinicName}</TableCell>
 
-              <TableCell>{row.lastUpdate ? row.lastUpdate : "---"}</TableCell>
+              <TableCell>{row.lastUpdate ? row.lastUpdate : '---'}</TableCell>
 
 
               <TableCell>
@@ -142,22 +144,22 @@ export default function Orders() {
 
 
       <Popover
-        style={{ padding: "2px 10px" }}
+        style={{ padding: '2px 10px' }}
         open={Boolean(addRowAnchor)}
         anchorEl={addRowAnchor}
         onClose={() => setAddRowAnchor(null)}
         anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center"
+          vertical: 'bottom',
+          horizontal: 'center'
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "left"
+          vertical: 'top',
+          horizontal: 'left'
         }}
       >
         <FormControl>
           <TextField
-            label="نام کلینیک"
+            label='نام کلینیک'
             className={classes.textField}
             autoFocus
             value={texts.addRow}
@@ -167,16 +169,31 @@ export default function Orders() {
           />
           <Button
             onClick={() => {
-              if (
-                texts.addRow !== ''
-              ) {
-                addClinic({ clinicName: texts.addRow }, { autoErrorControl: true })
+              if (texts.addRow !== '') {
+
+                let childs = [
+                  { id: hash('0' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 730, top: 300, root: true },
+                  { id: hash('1' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 400, top: 120 }
+                ]
+                let links = [
+                  { from: childs[0].id, to: childs[1].id },
+                ]
+
+                addClinic(
+                  {
+                    clinicName: texts.addRow,
+                    diagramModel: { childs, links },
+                    diagramTree: { ...childs[0], ccc: [{ ...childs[1], ccc: [] }] }
+                  },
+                  { autoErrorControl: true }
+                )
                   .then(data => {
                     setAddRowAnchor(null)
                     if (data.success) {
                       setDataRows([...dataRows, data.result])
                     }
-                  }).catch(err => { })
+                  })
+                  .catch(err => { })
               }
             }}
           >

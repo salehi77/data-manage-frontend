@@ -1,9 +1,9 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
-import Dashboard from "./components/pages/Dashboard";
-import DescriptionEdit from "./components/pages/DescriptionEdit";
-import Custom from "./components/pages/Custom";
+import Dashboard from './components/pages/Dashboard';
+import DescriptionEdit from './components/pages/DescriptionEdit';
+import Custom from './components/pages/Custom';
 import Diagram from './components/pages/Diagram'
 // import Algo from './components/pages/Algorithm'
 import CssBaseline from '@material-ui/core/CssBaseline'
@@ -11,7 +11,7 @@ import { ToastContainer } from 'react-toastify';
 
 const useStyles = makeStyles({
   toast: {
-    borderRadius: 10,
+    borderRadius: 5,
     fontFamily: 'XM Yekan',
   }
 })
@@ -23,11 +23,11 @@ function App(props) {
 
   return (
 
-    <div dir="rtl">
+    <div dir='rtl'>
 
       <CssBaseline />
       <ToastContainer
-        position="top-left"
+        position='top-left'
         autoClose={3000}
         // autoClose={false}
         // hideProgressBar
@@ -42,17 +42,17 @@ function App(props) {
 
       <Switch>
 
-        <Route exact path="/" component={Dashboard} />
+        <Route exact path='/' component={Dashboard} />
 
-        <Route exact path="/dg/:id" component={Diagram} />
+        <Route exact path='/dg/:clinicID' component={Diagram} />
 
-        {/* <Route exact path="/algo/:id" component={Algo} /> */}
+        {/* <Route exact path='/algo/:id' component={Algo} /> */}
 
-        <Route path="/edit/:id" component={DescriptionEdit} />
+        <Route path='/edit/:id' component={DescriptionEdit} />
 
-        <Route path="/a" component={Custom} />
+        <Route path='/a' component={Custom} />
 
-        <Route path="*">not found</Route>
+        <Route path='*'>not found</Route>
 
       </Switch>
 

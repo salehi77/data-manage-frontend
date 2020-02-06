@@ -1,5 +1,5 @@
-import api from "../api";
-import { errorControl } from "./errorActions";
+import api from '../api';
+import { errorControl } from './errorActions';
 
 export const getClinics = (data, options = {}) => {
   return api.clinic
@@ -31,7 +31,7 @@ export const getClinic = (data, options = {}) => {
 
 export const saveDiagram = (data, options = {}) => {
   return api.clinic
-    .saveDiagram(data.clinicID, data.diagramModel)
+    .saveDiagram(data.clinicID, data.diagramModel, data.diagramTree)
     .then(data => {
       return data;
     })
@@ -45,7 +45,7 @@ export const saveDiagram = (data, options = {}) => {
 
 export const addClinic = (data, options = {}) => {
   return api.clinic
-    .addClinic(data.clinicName)
+    .addClinic(data.clinicName, data.diagramModel, data.diagramTree)
     .then(data => {
       return data;
     })

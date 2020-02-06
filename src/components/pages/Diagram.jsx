@@ -36,16 +36,6 @@ const Diagram = (props) => {
     setDrawerOpen(value)
   }
 
-  const saveAction = () => {
-
-    // toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> یسنتیب منسیب سیب تسمنیبت </div>)
-
-    saveDiagram({ clinicID: 'iii', diagramModel: { childs, links } }, { autoErrorControl: true })
-      .then(data => {
-        console.log(data)
-      })
-  }
-
 
 
   const [board, setboard] = React.useState({ scale: 1, x: 0, y: 0 })
@@ -56,26 +46,59 @@ const Diagram = (props) => {
 
   const [linkMode, setlinkMode] = React.useState(null)
 
-  const [childs, setchilds] = React.useState([
-    { id: '57ee306acb6bd02c4ee14890622db5e970a57f86', text: 'اولین فرزند', left: 500, top: 300, root: true },
-    { id: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554', text: 'دومین فرزند', left: 100, top: 200 },
-    { id: '860017cbd3513b593c26dce44791656a579ebd8a', text: 'سومین فرزند', left: 100, top: 500 },
-  ])
-  const [links, setlinks] = React.useState([
-    { from: '57ee306acb6bd02c4ee14890622db5e970a57f86', to: 'fa5f6ca2a5a74822842d4b53bf04a9c8bb27d554' },
-    { from: '57ee306acb6bd02c4ee14890622db5e970a57f86', to: '860017cbd3513b593c26dce44791656a579ebd8a' },
-  ])
+  const [childs, setchilds] = React.useState([])
+  const [links, setlinks] = React.useState([])
 
-  const { id: clinicID } = useParams()
+
+
 
 
   React.useEffect(() => {
-
-    getClinic({ clinicID: clinicID }, { autoErrorControl: true })
+    const { params: { clinicID } } = props.match
+    getClinic({ clinicID }, { autoErrorControl: true })
       .then(data => {
+        if (data.success && data.result) {
+          const diagramModel = JSON.parse(data.result.diagramModel)
+          setchilds(diagramModel.childs)
+          setlinks(diagramModel.links)
+        }
+      })
+      .catch(err => { })
+  }, [])
+
+
+
+
+
+  const saveAction = () => {
+
+    let root = childs.find(child => child.root)
+
+    if (root) {
+      let t = model2tree(root.id)
+      const { params: { clinicID } } = props.match
+      saveDiagram(
+        { clinicID, diagramModel: { childs, links }, diagramTree: { ...root, ccc: t } },
+        { autoErrorControl: true }
+      ).then(data => {
         console.log(data)
       })
-  }, [])
+        .catch(err => { })
+    }
+
+  }
+
+
+
+
+  const model2tree = (nodeID) => {
+    let t = links.filter(link => link.from === nodeID)
+    if (t.length === 0) return []
+    t = childs.filter(child => t.filter(tt => tt.to === child.id).length > 0)
+    return t.map(tt => ({ ...tt, ccc: model2tree(tt.id) }))
+  }
+
+
 
 
 
@@ -418,15 +441,24 @@ const Diagram = (props) => {
                 <IconButton
                   disabled={selectingId ? false : true}
                   onClick={() => {
-                    let i = childs.findIndex(child => child.id === selectingId)
-                    if (i > -1) {
-                      if (childs[i].root) {
+
+                    let c = childs.find(child => child.id === selectingId)
+
+                    if (c) {
+                      if (c.root) {
                         toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> ریشه را نمی‌توان حذف کرد </div>)
                       }
                       else {
-                        let c = [...childs]
-                        c.splice(i, 1)
-                        setchilds(c)
+                        let l = links.filter(link => {
+                          return link.from !== c.id && link.to !== c.id
+                        })
+                        setlinks(l)
+                        let i = childs.indexOf(c)
+                        if (i > -1) {
+                          let c = [...childs]
+                          c.splice(i, 1)
+                          setchilds(c)
+                        }
                       }
                     }
                   }}
@@ -444,8 +476,8 @@ const Diagram = (props) => {
 
 
                 <Button
-                  variant="contained"
-                  size="large"
+                  variant='contained'
+                  size='large'
                   startIcon={<SaveIcon />}
                   onClick={saveAction}
                 >
@@ -478,11 +510,11 @@ const Diagram = (props) => {
         >
           <Alert
             action={
-              <Button className='alizarin' size="small" onClick={() => setlinkMode(null)}>
+              <Button className='alizarin' size='small' onClick={() => setlinkMode(null)}>
                 انصراف
               </Button>
             }
-            severity="info">
+            severity='info'>
             {
               linkMode === 1
                 ?

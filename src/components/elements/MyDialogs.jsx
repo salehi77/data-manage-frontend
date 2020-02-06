@@ -1,7 +1,7 @@
 import React from 'react'
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -55,7 +55,7 @@ export const ConfirmDeleteDialog = (props) => {
         classes={{ root: classes.dialogTitle }}
       >
 
-        <Typography variant="h6">
+        <Typography variant='h6'>
           آیا از حذف
           {` ${name} `}
           اطمینان دارید؟
@@ -66,7 +66,7 @@ export const ConfirmDeleteDialog = (props) => {
             ?
             (
               <IconButton
-                aria-label="close"
+                aria-label='close'
                 className={classes.closeButton}
                 onClick={onClose}
               >
