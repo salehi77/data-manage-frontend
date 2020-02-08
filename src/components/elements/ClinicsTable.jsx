@@ -171,19 +171,19 @@ export default function Orders() {
             onClick={() => {
               if (texts.addRow !== '') {
 
-                let childs = [
+                let nodes = [
                   { id: hash('0' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 730, top: 300, root: true },
                   { id: hash('1' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 400, top: 120 }
                 ]
                 let links = [
-                  { from: childs[0].id, to: childs[1].id },
+                  { from: nodes[0].id, to: nodes[1].id },
                 ]
 
                 addClinic(
                   {
                     clinicName: texts.addRow,
-                    diagramModel: { childs, links },
-                    diagramTree: { ...childs[0], ccc: [{ ...childs[1], ccc: [] }] }
+                    diagramModel: { nodes, links },
+                    diagramTree: { text: nodes[0].text, childs: [{ text: nodes[1].text, childs: [] }] }
                   },
                   { autoErrorControl: true }
                 )

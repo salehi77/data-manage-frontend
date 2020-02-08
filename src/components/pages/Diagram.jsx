@@ -16,8 +16,9 @@ import Badge from '@material-ui/core/Badge'
 import IconButton from '@material-ui/core/IconButton'
 import ShareIcon from '@material-ui/icons/Share'
 import CloseIcon from '@material-ui/icons/Close'
-import SaveIcon from '@material-ui/icons/SaveRounded'
+import SaveRoundedIcon from '@material-ui/icons/SaveRounded'
 import InfoIcon from '@material-ui/icons/Info'
+import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded'
 
 import { getClinic, saveDiagram } from '../../actions/clinicActions'
 
@@ -46,7 +47,7 @@ const Diagram = (props) => {
 
   const [linkMode, setlinkMode] = React.useState(null)
 
-  const [childs, setchilds] = React.useState([])
+  const [nodes, setnodes] = React.useState([])
   const [links, setlinks] = React.useState([])
 
 
@@ -59,8 +60,8 @@ const Diagram = (props) => {
       .then(data => {
         if (data.success && data.result) {
           const diagramModel = JSON.parse(data.result.diagramModel)
-          setchilds(diagramModel.childs)
-          setlinks(diagramModel.links)
+          setnodes(diagramModel.nodes ? diagramModel.nodes : [])
+          setlinks(diagramModel.links ? diagramModel.links : [])
         }
       })
       .catch(err => { })
@@ -72,19 +73,30 @@ const Diagram = (props) => {
 
   const saveAction = () => {
 
-    let root = childs.find(child => child.root)
+    let root = nodes.find(node => node.root)
 
     if (root) {
+
       let t = model2tree(root.id)
+
+      // console.log(t)
+
+
       const { params: { clinicID } } = props.match
+
       saveDiagram(
-        { clinicID, diagramModel: { childs, links }, diagramTree: { ...root, ccc: t } },
+        { clinicID, diagramModel: { nodes, links }, diagramTree: { text: root.text, childs: t } },
         { autoErrorControl: true }
       ).then(data => {
-        console.log(data)
+        if (data.success) {
+          toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
+
+        }
       })
         .catch(err => { })
+
     }
+
 
   }
 
@@ -94,8 +106,8 @@ const Diagram = (props) => {
   const model2tree = (nodeID) => {
     let t = links.filter(link => link.from === nodeID)
     if (t.length === 0) return []
-    t = childs.filter(child => t.filter(tt => tt.to === child.id).length > 0)
-    return t.map(tt => ({ ...tt, ccc: model2tree(tt.id) }))
+    t = nodes.filter(node => t.filter(tt => tt.to === node.id).length > 0)
+    return t.map(tt => ({ text: tt.text, childs: model2tree(tt.id) }))
   }
 
 
@@ -184,18 +196,18 @@ const Diagram = (props) => {
                       })
                     }
                     else {
-                      let i = childs.findIndex(child => child.id === movingId)
+                      let i = nodes.findIndex(node => node.id === movingId)
                       if (i > -1) {
-                        let c = childs[i]
+                        let c = nodes[i]
                         c = {
                           ...c,
                           top: c.top + e.movementY * (1 / board.scale),
                           left: c.left + e.movementX * (1 / board.scale),
                         }
-                        setchilds([
-                          ...childs.slice(0, i),
+                        setnodes([
+                          ...nodes.slice(0, i),
                           c,
-                          ...childs.slice(i + 1)
+                          ...nodes.slice(i + 1)
                         ])
                       }
                     }
@@ -205,7 +217,7 @@ const Diagram = (props) => {
                 onDrop={e => {
                   const v = e.dataTransfer.getData('foo');
                   if (v === 'panel')
-                    setchilds([...childs, { id: hash('' + Date.now()), text: '', top: 0, left: 0 }])
+                    setnodes([...nodes, { id: hash('' + Date.now()), text: '', top: 0, left: 0 }])
                   e.dataTransfer.clearData()
                 }}
               >
@@ -237,17 +249,19 @@ const Diagram = (props) => {
 
                       links.map((link, index) => {
 
-                        let fromIndex = childs.findIndex(child => child.id === link.from)
-                        let toIndex = childs.findIndex(child => child.id === link.to)
+                        let from = nodes.find(node => node.id === link.from)
+                        let to = nodes.find(node => node.id === link.to)
 
-                        if (fromIndex > -1 && toIndex > -1)
+
+                        if (from && to)
                           return (
                             <path
                               key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
-                              d={`M ${childs[fromIndex].left + 75} ${childs[fromIndex].top + 50} 
-                              L ${childs[toIndex].left + 75} ${childs[toIndex].top + 50}`}
+                              d={`M ${from.left + 75} ${from.top + 50}
+                              L ${to.left + 75} ${to.top + 50}`}
                             />
                           )
+
                       })
 
                     }
@@ -274,7 +288,7 @@ const Diagram = (props) => {
 
 
                     {
-                      childs.map((child, index) => {
+                      nodes.map((node, index) => {
 
                         return (
 
@@ -286,48 +300,48 @@ const Diagram = (props) => {
                               fontSize: 18,
                               overflowWrap: 'break-word',
                               whiteSpace: 'pre-wrap',
-                              backgroundColor: editingId === child.id ? '#ecf0f1' : '#2ecc71',
+                              backgroundColor: editingId === node.id ? '#ecf0f1' : '#2ecc71',
                               position: 'absolute',
-                              top: child.top,
-                              left: child.left,
+                              top: node.top,
+                              left: node.left,
                               borderRadius: 5,
                               padding: 5,
-                              border: `3px solid ${selectingId === child.id ? '#2980b9' : '#000'}`,
+                              border: `3px solid ${selectingId === node.id ? '#2980b9' : '#000'}`,
                             }}
                             onMouseDown={(e) => {
-                              if (editingId === null || editingId === child.id) {
+                              if (editingId === null || editingId === node.id) {
                                 e.stopPropagation()
                               }
                               if (editingId === null) {
-                                setmovingId(child.id)
-                                setselectingId(child.id)
+                                setmovingId(node.id)
+                                setselectingId(node.id)
                               }
                             }}
                             onDoubleClick={() => {
-                              seteditingId(child.id)
+                              seteditingId(node.id)
                             }}
                             onClick={() => {
                               if (linkMode) {
                                 if (linkMode === 1)
-                                  setlinkMode(child.id)
-                                else if (linkMode !== child.id) {
-                                  setlinks([...links, { from: linkMode, to: child.id }])
+                                  setlinkMode(node.id)
+                                else if (linkMode !== node.id) {
+                                  setlinks([...links, { from: linkMode, to: node.id }])
                                   setlinkMode(null)
                                 }
                               }
                             }}
                           >
 
-                            {child.root && <div className='mbadge'>ریشه</div>}
+                            {node.root && <div className='mbadge'>ریشه</div>}
 
                             {
 
-                              child.id !== editingId
+                              node.id !== editingId
 
                                 ?
 
                                 <>
-                                  {child.text}
+                                  {node.text}
                                 </>
 
                                 :
@@ -343,10 +357,10 @@ const Diagram = (props) => {
                                     border: 'none',
                                   }}
                                   autoFocus
-                                  defaultValue={child.text}
+                                  defaultValue={node.text}
                                   onChange={e => {
                                     e.persist()
-                                    setchilds([...childs.slice(0, index), { ...child, text: e.target.value }, ...childs.slice(index + 1)])
+                                    setnodes([...nodes.slice(0, index), { ...node, text: e.target.value }, ...nodes.slice(index + 1)])
                                   }}
                                 />
 
@@ -442,7 +456,7 @@ const Diagram = (props) => {
                   disabled={selectingId ? false : true}
                   onClick={() => {
 
-                    let c = childs.find(child => child.id === selectingId)
+                    let c = nodes.find(node => node.id === selectingId)
 
                     if (c) {
                       if (c.root) {
@@ -453,11 +467,11 @@ const Diagram = (props) => {
                           return link.from !== c.id && link.to !== c.id
                         })
                         setlinks(l)
-                        let i = childs.indexOf(c)
+                        let i = nodes.indexOf(c)
                         if (i > -1) {
-                          let c = [...childs]
+                          let c = [...nodes]
                           c.splice(i, 1)
-                          setchilds(c)
+                          setnodes(c)
                         }
                       }
                     }
@@ -478,7 +492,7 @@ const Diagram = (props) => {
                 <Button
                   variant='contained'
                   size='large'
-                  startIcon={<SaveIcon />}
+                  startIcon={<SaveRoundedIcon />}
                   onClick={saveAction}
                 >
                   ذخیره
