@@ -41,7 +41,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import * as SRD from "@projectstorm/react-diagrams";
-import { getClinic, updateDiagram } from "../../actions/clinicActions";
+// import { getClinic, updateDiagram } from "../../actions/clinicActions";
 import { ToastContainer, toast } from "react-toastify";
 
 toast.configure({
@@ -190,83 +190,83 @@ class Algorithm extends React.Component {
     const id = this.props.match.params.id;
     this.setState({ clinicID: id });
 
-    getClinic({ clinicID: id }, { autoErrorControl: true })
-      .then(data => {
+    // getClinic({ clinicID: id }, { autoErrorControl: true })
+    //   .then(data => {
 
-        if (data.success) {
-          const engine = new SRD.DiagramEngine(),
-            model = new SRD.DiagramModel();
-          engine.installDefaultFactories();
+    //     if (data.success) {
+    const engine = new SRD.DiagramEngine(),
+      model = new SRD.DiagramModel();
+    engine.installDefaultFactories();
 
-          try {
-            let d = JSON.parse(data.result.diagramModel)
+    //       try {
+    //         let d = JSON.parse(data.result.diagramModel)
 
-            if (d.rootID !== '') {
-              model.deSerializeDiagram(
-                JSON.parse(d.diagramModel),
-                engine
-              );
-              for (let n in model.nodes) {
-                model.nodes[n].addListener({
-                  selectionChanged: this.handleSelected
-                });
-              }
+    //         if (d.rootID !== '') {
+    //           model.deSerializeDiagram(
+    //             JSON.parse(d.diagramModel),
+    //             engine
+    //           );
+    //           for (let n in model.nodes) {
+    //             model.nodes[n].addListener({
+    //               selectionChanged: this.handleSelected
+    //             });
+    //           }
 
-              engine.setDiagramModel(model);
-              this.setState({ engine, rootID: d.rootID });
-            }
-            else {
-              throw new Error('Missed rootID')
-            }
-          }
-          catch (exc) {
-            console.log(exc);
-            var root = new SRD.DefaultNodeModel("root", "rgb(0,192,255)");
-            let port1 = root.addOutPort("out");
-            root.setPosition(500, 100);
-            root.addListener({
-              selectionChanged: this.handleSelected
-            });
+    //           engine.setDiagramModel(model);
+    //           this.setState({ engine, rootID: d.rootID });
+    //         }
+    //         else {
+    //           throw new Error('Missed rootID')
+    //         }
+    //       }
+    //       catch (exc) {
+    //         console.log(exc);
+    var root = new SRD.DefaultNodeModel("root", "rgb(0,192,255)");
+    let port1 = root.addOutPort("out");
+    root.setPosition(500, 100);
+    root.addListener({
+      selectionChanged: this.handleSelected
+    });
 
-            var node1 = new SRD.DefaultNodeModel("node1", "rgb(0,0,255)");
-            let port2 = node1.addInPort("in");
-            node1.addOutPort("out");
-            node1.setPosition(200, 100);
-            node1.addListener({
-              selectionChanged: this.handleSelected
-            });
+    var node1 = new SRD.DefaultNodeModel("node1", "rgb(0,0,255)");
+    let port2 = node1.addInPort("in");
+    node1.addOutPort("out");
+    node1.setPosition(200, 100);
+    node1.addListener({
+      selectionChanged: this.handleSelected
+    });
 
-            model.addAll(root, node1);
+    model.addAll(root, node1);
 
-            engine.setDiagramModel(model);
+    engine.setDiagramModel(model);
 
-            this.setState({ engine, rootID: root.id });
-          }
-          window.engine = engine;
-          window.model = model;
+    this.setState({ engine, rootID: root.id });
+    //       }
+    //       window.engine = engine;
+    //       window.model = model;
 
-        }
+    //     }
 
-      })
-      .catch(err => { })
+    //   })
+    //   .catch(err => { })
   }
 
   saveDiagram = () => {
     let jmodel = this.state.engine.diagramModel.serializeDiagram();
 
-    updateDiagram(
-      { clinicID: this.state.clinicID, rootID: this.state.rootID, diagramModel: JSON.stringify(jmodel) },
-      { autoErrorControl: true }
-    )
-      .then(data => {
-        if (data.success) {
-          toast.success("تغییرات ذخیره شدند");
-        }
-        else {
-          toast.error("یک خطای نامشخص رخ داده است");
-        }
-      })
-      .catch(err => { })
+    // updateDiagram(
+    //   { clinicID: this.state.clinicID, rootID: this.state.rootID, diagramModel: JSON.stringify(jmodel) },
+    //   { autoErrorControl: true }
+    // )
+    //   .then(data => {
+    //     if (data.success) {
+    //       toast.success("تغییرات ذخیره شدند");
+    //     }
+    //     else {
+    //       toast.error("یک خطای نامشخص رخ داده است");
+    //     }
+    //   })
+    //   .catch(err => { })
   }
 
 

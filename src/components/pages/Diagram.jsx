@@ -24,6 +24,8 @@ import { getClinic, saveDiagram } from '../../actions/clinicActions'
 
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
+import LeftSidebar from '../elements/Diagram/LeftSidebar'
+import Links from '../elements/Diagram/Links'
 
 
 
@@ -47,43 +49,69 @@ const Diagram = (props) => {
 
   const [linkMode, setlinkMode] = React.useState(null)
 
-  const [nodes, setnodes] = React.useState([])
-  const [links, setlinks] = React.useState([])
+  // const [nodes, setnodes] = React.useState([])
+  // const [links, setlinks] = React.useState([])
+
+  const [nodes, setnodes] = React.useState([
+    {
+      id: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
+      text: "برای وارد کردن متن دوبار کلیک کنید",
+      left: 730,
+      top: 300,
+      root: true,
+    },
+    {
+      id: "5d662db453fa1b90cea2440f4216775cc27f7ec7",
+      text: "برای وارد کردن متن دوبار کلیک کنید",
+      left: 352,
+      top: 92,
+    },
+    {
+      id: "bbc5a91332aaf1f5398dcaa2cda353afe5b79224",
+      text: "",
+      top: 465,
+      left: 334,
+    }
+  ])
+  const [links, setlinks] = React.useState([
+    {
+      from: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
+      to: "5d662db453fa1b90cea2440f4216775cc27f7ec7",
+
+    },
+    {
+      from: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
+      to: "bbc5a91332aaf1f5398dcaa2cda353afe5b79224",
+    }
+  ])
 
 
 
 
 
-  React.useEffect(() => {
-    const { params: { clinicID } } = props.match
-    getClinic({ clinicID }, { autoErrorControl: true })
-      .then(data => {
-        if (data.success && data.result) {
-          const diagramModel = JSON.parse(data.result.diagramModel)
-          setnodes(diagramModel.nodes ? diagramModel.nodes : [])
-          setlinks(diagramModel.links ? diagramModel.links : [])
-        }
-      })
-      .catch(err => { })
-  }, [])
+  // React.useEffect(() => {
+  //   const { params: { clinicID } } = props.match
+  //   getClinic({ clinicID }, { autoErrorControl: true })
+  //     .then(data => {
+  //       if (data.success && data.result) {
+  //         const diagramModel = JSON.parse(data.result.diagramModel)
+  //         setnodes(diagramModel.nodes ? diagramModel.nodes : [])
+  //         setlinks(diagramModel.links ? diagramModel.links : [])
+  //       }
+  //     })
+  //     .catch(err => { })
+  // }, [])
+
 
 
 
 
 
   const saveAction = () => {
-
     let root = nodes.find(node => node.root)
-
     if (root) {
-
       let t = model2tree(root.id)
-
-      // console.log(t)
-
-
       const { params: { clinicID } } = props.match
-
       saveDiagram(
         { clinicID, diagramModel: { nodes, links }, diagramTree: { text: root.text, childs: t } },
         { autoErrorControl: true }
@@ -92,16 +120,9 @@ const Diagram = (props) => {
           toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
 
         }
-      })
-        .catch(err => { })
-
+      }).catch(err => { })
     }
-
-
   }
-
-
-
 
   const model2tree = (nodeID) => {
     let t = links.filter(link => link.from === nodeID)
@@ -186,8 +207,8 @@ const Diagram = (props) => {
                   setmovingId(null)
                 }}
                 onMouseMove={e => {
+                  e.persist()
                   if (movingId !== null) {
-                    e.persist()
                     if (movingId === -1) {
                       setboard({
                         ...board,
@@ -212,6 +233,8 @@ const Diagram = (props) => {
                       }
                     }
                   }
+                  window.e = e
+                  // console.log(e.pageX)
                 }}
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => {
@@ -234,42 +257,11 @@ const Diagram = (props) => {
 
 
 
-
-                  <svg
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                      transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
-                      position: 'absolute',
-                      overflow: 'visible',
-                    }}
-                  >
-
-                    {
-
-                      links.map((link, index) => {
-
-                        let from = nodes.find(node => node.id === link.from)
-                        let to = nodes.find(node => node.id === link.to)
-
-
-                        if (from && to)
-                          return (
-                            <path
-                              key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
-                              d={`M ${from.left + 75} ${from.top + 50}
-                              L ${to.left + 75} ${to.top + 50}`}
-                            />
-                          )
-
-                      })
-
-                    }
-
-                  </svg>
-
-
-
+                  <Links
+                    board={board}
+                    links={links}
+                    nodes={nodes}
+                  />
 
 
 
@@ -306,6 +298,7 @@ const Diagram = (props) => {
                               left: node.left,
                               borderRadius: 5,
                               padding: 5,
+                              cursor: 'default',
                               border: `3px solid ${selectingId === node.id ? '#2980b9' : '#000'}`,
                             }}
                             onMouseDown={(e) => {
@@ -332,7 +325,23 @@ const Diagram = (props) => {
                             }}
                           >
 
+
                             {node.root && <div className='mbadge'>ریشه</div>}
+
+
+
+                            <div
+                              style={{
+                                width: 10,
+                                height: 10,
+                                position: 'absolute',
+                                backgroundColor: 'blue',
+                                bottom: 0,
+                                left: 0
+                              }}
+                            ></div>
+
+
 
                             {
 
@@ -379,6 +388,7 @@ const Diagram = (props) => {
 
                     }
 
+
                   </div>
 
 
@@ -400,109 +410,31 @@ const Diagram = (props) => {
 
             <Grid item xs={2}>
 
-
-              <Paper
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                  padding: '40px 4px',
-                  border: '1px solid rgba(0, 0, 0, .35)',
-                }}
-              >
-
-
-
-                <div
-                  style={{
-                    width: 150,
-                    minHeight: 100,
-                    fontSize: 18,
-                    backgroundColor: '#2ecc71',
-                    borderRadius: 5,
-                    border: '3px solid #000',
-                    cursor: 'grab',
-                  }}
-                  draggable
-                  onDragStart={e => e.dataTransfer.setData('foo', 'panel')}
-                >
-                </div>
-
-
-                <Divider style={{ width: '100%', margin: '20px 0 30px' }} />
-
-
-                <IconButton
-                  onClick={() => {
-                    !linkMode && setlinkMode(1)
-                  }}
-                >
-
-                  <ShareIcon
-                    style={{
-                      fontSize: '4rem',
-                      color: '#16a085',
-                    }}
-                  />
-
-                </IconButton>
-
-
-                <Divider style={{ width: '100%', margin: '20px 0 30px' }} />
-
-
-                <IconButton
-                  disabled={selectingId ? false : true}
-                  onClick={() => {
-
-                    let c = nodes.find(node => node.id === selectingId)
-
-                    if (c) {
-                      if (c.root) {
-                        toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> ریشه را نمی‌توان حذف کرد </div>)
-                      }
-                      else {
-                        let l = links.filter(link => {
-                          return link.from !== c.id && link.to !== c.id
-                        })
-                        setlinks(l)
-                        let i = nodes.indexOf(c)
-                        if (i > -1) {
-                          let c = [...nodes]
-                          c.splice(i, 1)
-                          setnodes(c)
-                        }
+              <LeftSidebar
+                selectingId={selectingId}
+                saveAction={saveAction}
+                setlinkMode={setlinkMode}
+                removeClicked={() => {
+                  let c = nodes.find(node => node.id === selectingId)
+                  if (c) {
+                    if (c.root) {
+                      toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> ریشه را نمی‌توان حذف کرد </div>)
+                    }
+                    else {
+                      let l = links.filter(link => {
+                        return link.from !== c.id && link.to !== c.id
+                      })
+                      setlinks(l)
+                      let i = nodes.indexOf(c)
+                      if (i > -1) {
+                        let c = [...nodes]
+                        c.splice(i, 1)
+                        setnodes(c)
                       }
                     }
-                  }}
-                >
-
-                  <CloseIcon
-                    style={{ fontSize: '4rem' }}
-                    className={selectingId ? 'alizarin' : ''}
-                  />
-
-                </IconButton>
-
-
-                <Divider style={{ width: '100%', margin: '20px 0 30px' }} />
-
-
-                <Button
-                  variant='contained'
-                  size='large'
-                  startIcon={<SaveRoundedIcon />}
-                  onClick={saveAction}
-                >
-                  ذخیره
-                </Button>
-
-
-
-
-              </Paper>
-
+                  }
+                }}
+              />
 
             </Grid>
 
