@@ -31,7 +31,7 @@ const Links = (props) => {
               <path
                 key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
                 d={`M ${from.left + 75} ${from.top + 50}
-              L ${to.left + 75} ${to.top + 50}`}
+                    L ${to.left + 75} ${to.top + 50}`}
               />
             )
 

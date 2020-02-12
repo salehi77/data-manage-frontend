@@ -87,6 +87,10 @@ const Diagram = (props) => {
 
 
 
+  const [mode, setmode] = React.useState(null)
+
+
+  // console.log(mode)
 
 
   // React.useEffect(() => {
@@ -105,22 +109,32 @@ const Diagram = (props) => {
 
 
 
-
-
   const saveAction = () => {
-    let root = nodes.find(node => node.root)
-    if (root) {
-      let t = model2tree(root.id)
-      const { params: { clinicID } } = props.match
-      saveDiagram(
-        { clinicID, diagramModel: { nodes, links }, diagramTree: { text: root.text, childs: t } },
-        { autoErrorControl: true }
-      ).then(data => {
-        if (data.success) {
-          toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
 
-        }
-      }).catch(err => { })
+    let a = links.find(link => {
+      return links.find(link2 => {
+        return link.from === link2.to && link.to === link2.from
+      })
+    })
+
+    if (a) {
+      toast.error('دور در درخت وجود دارد')
+    }
+    else {
+      let root = nodes.find(node => node.root)
+      if (root) {
+        let t = model2tree(root.id)
+        const { params: { clinicID } } = props.match
+        saveDiagram(
+          { clinicID, diagramModel: { nodes, links }, diagramTree: { text: root.text, childs: t } },
+          { autoErrorControl: true }
+        ).then(data => {
+          if (data.success) {
+            toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
+
+          }
+        }).catch(err => { })
+      }
     }
   }
 
@@ -205,10 +219,11 @@ const Diagram = (props) => {
                 }}
                 onMouseUp={() => {
                   setmovingId(null)
+                  setmode(null)
                 }}
                 onMouseMove={e => {
-                  e.persist()
                   if (movingId !== null) {
+                    e.persist()
                     if (movingId === -1) {
                       setboard({
                         ...board,
@@ -233,8 +248,10 @@ const Diagram = (props) => {
                       }
                     }
                   }
-                  window.e = e
-                  // console.log(e.pageX)
+                  if (mode) {
+                    e.persist()
+                    setmode({ ...mode, endX: mode.endX + e.movementX * (1 / board.scale), endY: mode.endY + e.movementY * (1 / board.scale) })
+                  }
                 }}
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => {
@@ -257,11 +274,71 @@ const Diagram = (props) => {
 
 
 
-                  <Links
+                  {/* <Links
                     board={board}
                     links={links}
                     nodes={nodes}
-                  />
+                  /> */}
+
+                  <svg
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                      transform: `scale(${board.scale}) translate(${board.x}px, ${board.y}px)`,
+                      position: 'absolute',
+                      overflow: 'visible',
+                    }}
+                  >
+                    <defs>
+                      <marker id="triangle" viewBox="0 0 10 10"
+                        refX="1" refY="5"
+                        markerUnits="strokeWidth"
+                        markerWidth="4" markerHeight="4"
+                        orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#aaaaaa" />
+                      </marker>
+                    </defs>
+
+                    {
+
+                      links.map((link, index) => {
+
+                        let from = nodes.find(node => node.id === link.from)
+                        let to = nodes.find(node => node.id === link.to)
+
+
+                        if (from && to) {
+
+                          let offset = { x: 0, y: 0 }
+
+                          from.left < to.left ? offset.x = 85 : offset.x = -85
+
+                          return (
+                            <path
+                              key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
+                              d={`M ${from.left + 75} ${from.top + 50} L ${to.left + 160} ${to.top + 50}`}
+                              marker-end="url(#triangle)"
+                            />
+                          )
+                        }
+
+                      })
+
+                    }
+
+                    {
+                      mode
+
+                      &&
+
+                      <path
+                        fill='transparent' stroke='#aaaaaa' strokeWidth='3'
+                        d={`M ${mode.startX} ${mode.startY} L ${mode.endX} ${mode.endY}`}
+                      />
+                    }
+
+
+                  </svg>
 
 
 
@@ -287,20 +364,15 @@ const Diagram = (props) => {
                           <div
                             key={index}
                             style={{
-                              width: 150,
-                              minHeight: 100,
-                              fontSize: 18,
-                              overflowWrap: 'break-word',
-                              whiteSpace: 'pre-wrap',
-                              backgroundColor: editingId === node.id ? '#ecf0f1' : '#2ecc71',
-                              position: 'absolute',
                               top: node.top,
                               left: node.left,
-                              borderRadius: 5,
-                              padding: 5,
-                              cursor: 'default',
-                              border: `3px solid ${selectingId === node.id ? '#2980b9' : '#000'}`,
                             }}
+                            className={`
+                              node
+                              ${editingId === node.id ? 'edit-node' : ''}
+                              ${selectingId === node.id ? 'select-node' : ''}
+                              ${mode && mode.id !== node.id ? 'link-node' : ''}
+                            `}
                             onMouseDown={(e) => {
                               if (editingId === null || editingId === node.id) {
                                 e.stopPropagation()
@@ -308,6 +380,12 @@ const Diagram = (props) => {
                               if (editingId === null) {
                                 setmovingId(node.id)
                                 setselectingId(node.id)
+                              }
+                            }}
+                            onMouseUp={(e) => {
+                              if (mode && mode.id !== node.id) {
+                                if (!links.find(link => link.from === mode.id && link.to === node.id))
+                                  setlinks([...links, { from: mode.id, to: node.id }])
                               }
                             }}
                             onDoubleClick={() => {
@@ -332,12 +410,13 @@ const Diagram = (props) => {
 
                             <div
                               style={{
-                                width: 10,
-                                height: 10,
-                                position: 'absolute',
-                                backgroundColor: 'blue',
-                                bottom: 0,
-                                left: 0
+                                top: 0,
+                                left: 0,
+                              }}
+                              className='corner'
+                              onMouseDown={(e) => {
+                                e.stopPropagation()
+                                setmode({ id: node.id, startX: node.left, startY: node.top, endX: node.left, endY: node.top })
                               }}
                             ></div>
 
@@ -396,6 +475,7 @@ const Diagram = (props) => {
 
 
                 </div>
+
 
               </Paper>
 
