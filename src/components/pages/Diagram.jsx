@@ -54,34 +54,34 @@ const Diagram = (props) => {
 
   const [nodes, setnodes] = React.useState([
     {
-      id: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
-      text: "برای وارد کردن متن دوبار کلیک کنید",
+      id: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
+      text: 'برای وارد کردن متن دوبار کلیک کنید',
       left: 730,
       top: 300,
       root: true,
     },
     {
-      id: "5d662db453fa1b90cea2440f4216775cc27f7ec7",
-      text: "برای وارد کردن متن دوبار کلیک کنید",
+      id: '5d662db453fa1b90cea2440f4216775cc27f7ec7',
+      text: 'برای وارد کردن متن دوبار کلیک کنید',
       left: 352,
       top: 92,
     },
     {
-      id: "bbc5a91332aaf1f5398dcaa2cda353afe5b79224",
-      text: "",
+      id: 'bbc5a91332aaf1f5398dcaa2cda353afe5b79224',
+      text: '',
       top: 465,
       left: 334,
     }
   ])
   const [links, setlinks] = React.useState([
     {
-      from: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
-      to: "5d662db453fa1b90cea2440f4216775cc27f7ec7",
+      from: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
+      to: '5d662db453fa1b90cea2440f4216775cc27f7ec7',
 
     },
     {
-      from: "b60ab1a1232926a71a5bbf9bc15e74d7e27782ba",
-      to: "bbc5a91332aaf1f5398dcaa2cda353afe5b79224",
+      from: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
+      to: 'bbc5a91332aaf1f5398dcaa2cda353afe5b79224',
     }
   ])
 
@@ -147,8 +147,22 @@ const Diagram = (props) => {
 
 
 
+  // console.log(links[1].from, links[1].to)
+
+  let from = nodes.find(node => node.id === links[1].from)
+  let to = nodes.find(node => node.id === links[1].to)
 
 
+  if (from && to) {
+
+    let offset = { x: from.left - to.left, y: from.top - to.top }
+
+    // from.left < to.left ? offset.x = -10 : offset.x = 160
+
+    // console.log(from.left, from.top, to.left, to.top)
+    console.log(offset)
+
+  }
 
 
   return (
@@ -290,12 +304,12 @@ const Diagram = (props) => {
                     }}
                   >
                     <defs>
-                      <marker id="triangle" viewBox="0 0 10 10"
-                        refX="1" refY="5"
-                        markerUnits="strokeWidth"
-                        markerWidth="4" markerHeight="4"
-                        orient="auto">
-                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#aaaaaa" />
+                      <marker id='triangle' viewBox='0 0 10 10'
+                        refX='1' refY='5'
+                        markerUnits='strokeWidth'
+                        markerWidth='4' markerHeight='4'
+                        orient='auto'>
+                        <path d='M 0 0 L 10 5 L 0 10 z' fill='#aaaaaa' />
                       </marker>
                     </defs>
 
@@ -309,15 +323,16 @@ const Diagram = (props) => {
 
                         if (from && to) {
 
-                          let offset = { x: 0, y: 0 }
-
-                          from.left < to.left ? offset.x = 85 : offset.x = -85
+                          // let offset = { x: 0, y: 0 }
+                          let offset = { x: from.left - to.left, y: from.top - to.top }
+                          offset.x = offset.x > 0 ? 155 : -5
+                          offset.y = offset.y > 0 ? 105 : -5
 
                           return (
                             <path
                               key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
-                              d={`M ${from.left + 75} ${from.top + 50} L ${to.left + 160} ${to.top + 50}`}
-                              marker-end="url(#triangle)"
+                              d={`M ${from.left + 75} ${from.top + 50} L ${to.left + offset.x} ${to.top + offset.y}`}
+                              markerEnd='url(#triangle)'
                             />
                           )
                         }
@@ -334,6 +349,7 @@ const Diagram = (props) => {
                       <path
                         fill='transparent' stroke='#aaaaaa' strokeWidth='3'
                         d={`M ${mode.startX} ${mode.startY} L ${mode.endX} ${mode.endY}`}
+                        markerEnd='url(#triangle)'
                       />
                     }
 
