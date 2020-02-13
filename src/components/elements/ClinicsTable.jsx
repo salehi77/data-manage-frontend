@@ -172,8 +172,8 @@ export default function Orders() {
               if (texts.addRow !== '') {
 
                 let nodes = [
-                  { id: hash('0' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 730, top: 300, root: true },
-                  { id: hash('1' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 400, top: 120 }
+                  { id: hash('0' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 730, top: 300, height: 100, root: true },
+                  { id: hash('1' + Date.now()), text: 'برای وارد کردن متن دوبار کلیک کنید', left: 400, top: 120, height: 100 }
                 ]
                 let links = [
                   { from: nodes[0].id, to: nodes[1].id },

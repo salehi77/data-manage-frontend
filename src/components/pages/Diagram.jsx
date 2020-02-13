@@ -48,52 +48,11 @@ const Diagram = (props) => {
   const [selectingId, setselectingId] = React.useState(null)
 
   const [linkMode, setlinkMode] = React.useState(null)
+  const [linkMode2, setlinkMode2] = React.useState(null)
 
-  // const [nodes, setnodes] = React.useState([])
-  // const [links, setlinks] = React.useState([])
+  const [nodes, setnodes] = React.useState([])
+  const [links, setlinks] = React.useState([])
 
-  const [nodes, setnodes] = React.useState([
-    {
-      id: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
-      text: 'برای وارد کردن متن دوبار کلیک کنید',
-      left: 730,
-      top: 300,
-      height: 100,
-      root: true,
-    },
-    {
-      id: '5d662db453fa1b90cea2440f4216775cc27f7ec7',
-      text: 'برای وارد کردن متن دوبار کلیک کنید',
-      left: 352,
-      top: 92,
-      height: 100,
-    },
-    {
-      id: 'bbc5a91332aaf1f5398dcaa2cda353afe5b79224',
-      text: '',
-      top: 465,
-      height: 100,
-      left: 334,
-    }
-  ])
-  const [links, setlinks] = React.useState([
-    {
-      from: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
-      to: '5d662db453fa1b90cea2440f4216775cc27f7ec7',
-
-    },
-    {
-      from: 'b60ab1a1232926a71a5bbf9bc15e74d7e27782ba',
-      to: 'bbc5a91332aaf1f5398dcaa2cda353afe5b79224',
-    }
-  ])
-
-
-
-  const [mode, setmode] = React.useState(null)
-
-
-  // console.log(mode)
 
 
   React.useEffect(() => {
@@ -148,6 +107,16 @@ const Diagram = (props) => {
     return t.map(tt => ({ text: tt.text, childs: model2tree(tt.id) }))
   }
 
+  const cornerMouseDown = (e, node, off) => {
+    e.stopPropagation()
+    setlinkMode2({
+      id: node.id,
+      startX: node.left + off[0],
+      startY: node.top + off[1],
+      endX: node.left + off[0],
+      endY: node.top + off[1],
+    })
+  }
 
 
   return (
@@ -214,22 +183,25 @@ const Diagram = (props) => {
                 onMouseDown={() => {
                   setmovingId(-1)
                   setselectingId(null)
-                  if (editingId) {
-                    let i = nodes.findIndex(node => node.id == editingId)
-                    let elem = document.getElementById(editingId)
-                    if (i > -1 && elem) {
-                      setnodes([
-                        ...nodes.slice(0, i),
-                        { ...nodes[i], height: elem.offsetHeight },
-                        ...nodes.slice(i + 1)
-                      ])
-                    }
-                    seteditingId(null)
-                  }
+                  setTimeout(
+                    () => {
+                      let i = nodes.findIndex(node => node.id == editingId)
+                      let elem = document.getElementById(editingId)
+                      if (i > -1 && elem) {
+                        setnodes([
+                          ...nodes.slice(0, i),
+                          { ...nodes[i], height: elem.offsetHeight },
+                          ...nodes.slice(i + 1)
+                        ])
+                      }
+                    },
+                    100
+                  )
+                  seteditingId(null)
                 }}
                 onMouseUp={() => {
                   setmovingId(null)
-                  setmode(null)
+                  setlinkMode2(null)
                 }}
                 onMouseMove={e => {
                   if (movingId !== null) {
@@ -258,16 +230,16 @@ const Diagram = (props) => {
                       }
                     }
                   }
-                  if (mode) {
+                  if (linkMode2) {
                     e.persist()
-                    setmode({ ...mode, endX: mode.endX + e.movementX * (1 / board.scale), endY: mode.endY + e.movementY * (1 / board.scale) })
+                    setlinkMode2({ ...linkMode2, endX: linkMode2.endX + e.movementX * (1 / board.scale), endY: linkMode2.endY + e.movementY * (1 / board.scale) })
                   }
                 }}
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => {
                   const v = e.dataTransfer.getData('foo');
                   if (v === 'panel')
-                    setnodes([...nodes, { id: hash('' + Date.now()), text: '', top: 0, left: 0 }])
+                    setnodes([...nodes, { id: hash('' + Date.now()), text: '', top: 0, left: 0, height: 100 }])
                   e.dataTransfer.clearData()
                 }}
               >
@@ -319,39 +291,21 @@ const Diagram = (props) => {
 
                         if (from && to) {
 
-
-                          let offset = { x: 0, y: 0 }
-
                           const L = to.left - from.left
                           const T = to.top - from.top
                           const D = Math.abs(L) - Math.abs(T)
 
-                          if ((L < 0 && T > 0 && Math.abs(L) > Math.abs(T)) || (L < 0 && T < 0 && Math.abs(L) > Math.abs(T))) { offset.x = 150; offset.y = 50 }
-                          if ((L > 0 && T > 0 && Math.abs(L) > Math.abs(T)) || (L > 0 && T < 0 && Math.abs(L) > Math.abs(T))) { offset.x = 0; offset.y = 50 }
+                          const halfHeight = to.height ? to.height / 2 : 50
 
-                          if ((L < 0 && T > 0 && Math.abs(L) < Math.abs(T)) || (L > 0 && T > 0 && Math.abs(L) < Math.abs(T))) { offset.x = 75; offset.y = 0 }
-                          if ((L < 0 && T < 0 && Math.abs(L) < Math.abs(T)) || (L > 0 && T < 0 && Math.abs(L) < Math.abs(T))) { offset.x = 75; offset.y = 100 }
+                          let pos = { x: 75, y: halfHeight }
 
-                          offset = { x: 0, y: 0 }
-
-
-                          if (L < 0 && D > 0) { offset.x = 150; offset.y = 50 }
-                          if (L > 0 && D > 0) { offset.x = 0; offset.y = 50 }
-
-                          if (T < 0 && D < 0) { offset.x = 75; offset.y = 100 }
-                          if (T > 0 && D < 0) { offset.x = 75; offset.y = 0 }
-
-
-                          offset = { x: 75, y: 50 }
-
-                          if (D > 0) { offset.x += (L < 0 ? 75 : -75) }
-                          if (D < 0) { offset.y += (T < 0 ? 50 : -50) }
-
+                          if (D > 0) { pos.x += (L < 0 ? 85 : -85) }
+                          if (D < 0) { pos.y += (T < 0 ? halfHeight + 10 : -halfHeight - 10) }
 
                           return (
                             <path
                               key={index} fill='transparent' stroke='#aaaaaa' strokeWidth='3'
-                              d={`M ${from.left + 75} ${from.top + 50} L ${to.left + offset.x} ${to.top + offset.y}`}
+                              d={`M ${from.left + 75} ${from.top + (from.height ? from.height / 2 : 75)} L ${to.left + pos.x} ${to.top + pos.y}`}
                               markerEnd='url(#triangle)'
                             />
                           )
@@ -362,13 +316,13 @@ const Diagram = (props) => {
                     }
 
                     {
-                      mode
+                      linkMode2
 
                       &&
 
                       <path
                         fill='transparent' stroke='#aaaaaa' strokeWidth='3'
-                        d={`M ${mode.startX} ${mode.startY} L ${mode.endX} ${mode.endY}`}
+                        d={`M ${linkMode2.startX} ${linkMode2.startY} L ${linkMode2.endX} ${linkMode2.endY}`}
                         markerEnd='url(#triangle)'
                       />
                     }
@@ -408,7 +362,7 @@ const Diagram = (props) => {
                               node
                               ${editingId === node.id ? 'edit-node' : ''}
                               ${selectingId === node.id ? 'select-node' : ''}
-                              ${mode && mode.id !== node.id ? 'link-node' : ''}
+                              ${linkMode2 && linkMode2.id !== node.id ? 'link-node' : ''}
                             `}
                             onMouseDown={(e) => {
                               if (editingId === null || editingId === node.id) {
@@ -420,10 +374,13 @@ const Diagram = (props) => {
                               }
                             }}
                             onMouseUp={(e) => {
-                              if (mode && mode.id !== node.id) {
-                                if (!links.find(link => link.from === mode.id && link.to === node.id))
-                                  setlinks([...links, { from: mode.id, to: node.id }])
-                              }
+                              if (linkMode2)
+                                if (node.root)
+                                  toast.info(<div style={{ display: 'flex' }}><InfoIcon style={{ marginLeft: 5 }} /> به ریشه نمی‌توان لینک متصل کرد </div>)
+                                else if (linkMode2.id !== node.id) {
+                                  if (!links.find(link => link.from === linkMode2.id && link.to === node.id))
+                                    setlinks([...links, { from: linkMode2.id, to: node.id }])
+                                }
                             }}
                             onDoubleClick={() => {
                               seteditingId(node.id)
@@ -445,17 +402,10 @@ const Diagram = (props) => {
 
 
 
-                            <div
-                              style={{
-                                top: 0,
-                                left: 0,
-                              }}
-                              className='corner'
-                              onMouseDown={(e) => {
-                                e.stopPropagation()
-                                setmode({ id: node.id, startX: node.left, startY: node.top, endX: node.left, endY: node.top })
-                              }}
-                            ></div>
+                            <div style={{ top: -6, left: -6 }} className='corner' onMouseDown={(e) => cornerMouseDown(e, node, [0, 0])} />
+                            <div style={{ top: -6, right: -6 }} className='corner' onMouseDown={(e) => cornerMouseDown(e, node, [150, 0])} />
+                            <div style={{ bottom: -6, left: -6 }} className='corner' onMouseDown={(e) => cornerMouseDown(e, node, [0, node.height])} />
+                            <div style={{ bottom: -6, right: -6 }} className='corner' onMouseDown={(e) => cornerMouseDown(e, node, [150, node.height])} />
 
 
 
