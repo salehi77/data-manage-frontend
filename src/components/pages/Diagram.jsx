@@ -58,6 +58,7 @@ const Diagram = (props) => {
       text: 'برای وارد کردن متن دوبار کلیک کنید',
       left: 730,
       top: 300,
+      height: 100,
       root: true,
     },
     {
@@ -65,11 +66,13 @@ const Diagram = (props) => {
       text: 'برای وارد کردن متن دوبار کلیک کنید',
       left: 352,
       top: 92,
+      height: 100,
     },
     {
       id: 'bbc5a91332aaf1f5398dcaa2cda353afe5b79224',
       text: '',
       top: 465,
+      height: 100,
       left: 334,
     }
   ])
@@ -93,18 +96,18 @@ const Diagram = (props) => {
   // console.log(mode)
 
 
-  // React.useEffect(() => {
-  //   const { params: { clinicID } } = props.match
-  //   getClinic({ clinicID }, { autoErrorControl: true })
-  //     .then(data => {
-  //       if (data.success && data.result) {
-  //         const diagramModel = JSON.parse(data.result.diagramModel)
-  //         setnodes(diagramModel.nodes ? diagramModel.nodes : [])
-  //         setlinks(diagramModel.links ? diagramModel.links : [])
-  //       }
-  //     })
-  //     .catch(err => { })
-  // }, [])
+  React.useEffect(() => {
+    const { params: { clinicID } } = props.match
+    getClinic({ clinicID }, { autoErrorControl: true })
+      .then(data => {
+        if (data.success && data.result) {
+          const diagramModel = JSON.parse(data.result.diagramModel)
+          setnodes(diagramModel.nodes ? diagramModel.nodes : [])
+          setlinks(diagramModel.links ? diagramModel.links : [])
+        }
+      })
+      .catch(err => { })
+  }, [])
 
 
 
@@ -145,24 +148,6 @@ const Diagram = (props) => {
     return t.map(tt => ({ text: tt.text, childs: model2tree(tt.id) }))
   }
 
-
-
-  // console.log(links[1].from, links[1].to)
-
-  let from = nodes.find(node => node.id === links[1].from)
-  let to = nodes.find(node => node.id === links[1].to)
-
-
-  if (from && to) {
-
-    let offset = { x: from.left - to.left, y: from.top - to.top }
-
-    // from.left < to.left ? offset.x = -10 : offset.x = 160
-
-    // console.log(from.left, from.top, to.left, to.top)
-    console.log(offset)
-
-  }
 
 
   return (
@@ -228,8 +213,19 @@ const Diagram = (props) => {
                 }}
                 onMouseDown={() => {
                   setmovingId(-1)
-                  seteditingId(null)
                   setselectingId(null)
+                  if (editingId) {
+                    let i = nodes.findIndex(node => node.id == editingId)
+                    let elem = document.getElementById(editingId)
+                    if (i > -1 && elem) {
+                      setnodes([
+                        ...nodes.slice(0, i),
+                        { ...nodes[i], height: elem.offsetHeight },
+                        ...nodes.slice(i + 1)
+                      ])
+                    }
+                    seteditingId(null)
+                  }
                 }}
                 onMouseUp={() => {
                   setmovingId(null)
@@ -323,10 +319,34 @@ const Diagram = (props) => {
 
                         if (from && to) {
 
-                          // let offset = { x: 0, y: 0 }
-                          let offset = { x: from.left - to.left, y: from.top - to.top }
-                          offset.x = offset.x > 0 ? 155 : -5
-                          offset.y = offset.y > 0 ? 105 : -5
+
+                          let offset = { x: 0, y: 0 }
+
+                          const L = to.left - from.left
+                          const T = to.top - from.top
+                          const D = Math.abs(L) - Math.abs(T)
+
+                          if ((L < 0 && T > 0 && Math.abs(L) > Math.abs(T)) || (L < 0 && T < 0 && Math.abs(L) > Math.abs(T))) { offset.x = 150; offset.y = 50 }
+                          if ((L > 0 && T > 0 && Math.abs(L) > Math.abs(T)) || (L > 0 && T < 0 && Math.abs(L) > Math.abs(T))) { offset.x = 0; offset.y = 50 }
+
+                          if ((L < 0 && T > 0 && Math.abs(L) < Math.abs(T)) || (L > 0 && T > 0 && Math.abs(L) < Math.abs(T))) { offset.x = 75; offset.y = 0 }
+                          if ((L < 0 && T < 0 && Math.abs(L) < Math.abs(T)) || (L > 0 && T < 0 && Math.abs(L) < Math.abs(T))) { offset.x = 75; offset.y = 100 }
+
+                          offset = { x: 0, y: 0 }
+
+
+                          if (L < 0 && D > 0) { offset.x = 150; offset.y = 50 }
+                          if (L > 0 && D > 0) { offset.x = 0; offset.y = 50 }
+
+                          if (T < 0 && D < 0) { offset.x = 75; offset.y = 100 }
+                          if (T > 0 && D < 0) { offset.x = 75; offset.y = 0 }
+
+
+                          offset = { x: 75, y: 50 }
+
+                          if (D > 0) { offset.x += (L < 0 ? 75 : -75) }
+                          if (D < 0) { offset.y += (T < 0 ? 50 : -50) }
+
 
                           return (
                             <path
@@ -379,6 +399,7 @@ const Diagram = (props) => {
 
                           <div
                             key={index}
+                            id={node.id}
                             style={{
                               top: node.top,
                               left: node.left,
@@ -464,7 +485,11 @@ const Diagram = (props) => {
                                   defaultValue={node.text}
                                   onChange={e => {
                                     e.persist()
-                                    setnodes([...nodes.slice(0, index), { ...node, text: e.target.value }, ...nodes.slice(index + 1)])
+                                    setnodes([
+                                      ...nodes.slice(0, index),
+                                      { ...node, text: e.target.value },
+                                      ...nodes.slice(index + 1)
+                                    ])
                                   }}
                                 />
 
