@@ -293,14 +293,13 @@ const Diagram = (props) => {
 
                           const L = to.left - from.left
                           const T = to.top - from.top
-                          const D = Math.abs(L) - Math.abs(T)
 
                           const halfHeight = to.height ? to.height / 2 : 50
 
                           let pos = { x: 75, y: halfHeight }
 
-                          if (D > 0) { pos.x += (L < 0 ? 85 : -85) }
-                          if (D < 0) { pos.y += (T < 0 ? halfHeight + 10 : -halfHeight - 10) }
+                          if (Math.abs(L) - Math.abs(T) > 0) { pos.x += (L < 0 ? 85 : -85) }
+                          else { pos.y += (T < 0 ? halfHeight + 10 : -halfHeight - 10) }
 
                           return (
                             <path
@@ -362,7 +361,7 @@ const Diagram = (props) => {
                               node
                               ${editingId === node.id ? 'edit-node' : ''}
                               ${selectingId === node.id ? 'select-node' : ''}
-                              ${linkMode2 && linkMode2.id !== node.id ? 'link-node' : ''}
+                              ${linkMode2 && linkMode2.id !== node.id && !node.root ? 'link-node' : ''}
                             `}
                             onMouseDown={(e) => {
                               if (editingId === null || editingId === node.id) {
