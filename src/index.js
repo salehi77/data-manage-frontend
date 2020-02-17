@@ -1,32 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
-import { BrowserRouter, Route } from 'react-router-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+import * as serviceWorker from './serviceWorker'
+import { BrowserRouter, Route } from 'react-router-dom'
 
-import 'react-toastify/dist/ReactToastify.css';
-import './assets/my_css.css';
+import './assets/fonts.css'
+import 'react-toastify/dist/ReactToastify.css'
+import './assets/my_css.css'
 
 
-import green from '@material-ui/core/colors/green';
-import deepPurple from '@material-ui/core/colors/deepPurple';
+import green from '@material-ui/core/colors/green'
+import deepPurple from '@material-ui/core/colors/deepPurple'
 
-import { create } from 'jss';
-import rtl from 'jss-rtl';
+import { create } from 'jss'
+import rtl from 'jss-rtl'
 import {
   ThemeProvider,
   createMuiTheme,
   StylesProvider,
   jssPreset
-} from '@material-ui/core/styles';
+} from '@material-ui/core/styles'
 
-import '@projectstorm/react-diagrams/dist/style.min.css';
+import '@projectstorm/react-diagrams/dist/style.min.css'
 
 
 
 const jss = create({
   plugins: [...jssPreset().plugins, rtl()]
-});
+})
 
 const theme = createMuiTheme({
   palette: {
@@ -37,10 +38,10 @@ const theme = createMuiTheme({
     fontFamily: 'Vazir'
   },
   direction: 'rtl'
-});
+})
 
 
-console.log(theme);
+console.log(theme)
 
 ReactDOM.render(
   <StylesProvider jss={jss}>
@@ -51,9 +52,9 @@ ReactDOM.render(
     </BrowserRouter>
   </StylesProvider>,
   document.getElementById('root')
-);
+)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.unregister()
