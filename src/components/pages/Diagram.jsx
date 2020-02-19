@@ -25,7 +25,6 @@ import { getClinic, saveDiagram } from '../../actions/clinicActions'
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
 import LeftSidebar from '../elements/Diagram/LeftSidebar'
-import Links from '../elements/Diagram/Links'
 
 
 
@@ -254,13 +253,6 @@ const Diagram = (props) => {
                   }}
                 >
 
-
-
-                  {/* <Links
-                    board={board}
-                    links={links}
-                    nodes={nodes}
-                  /> */}
 
                   <svg
                     style={{

@@ -510,32 +510,29 @@ class Algorithm extends React.Component {
 
 let dependencies = {
   "@emotion/core": "^10.0.22",
-  "@material-ui/core": "^4.7.0",
-  "@material-ui/icons": "^4.5.1",
+  "@material-ui/core": "^4.9.1",
+  "@material-ui/icons": "^4.9.1",
+  "@material-ui/lab": "^4.0.0-alpha.41",
   "@projectstorm/react-diagrams": "5.3.2",
   "@react-page/renderer": "^0.16.3",
   "axios": "^0.19.0",
   "closest": "^0.0.1",
   "dagre": "^0.8.4",
-  "draft-js": "^0.11.2",
-  "froala-editor": "^3.0.6",
-  "glamor": "^2.20.40",
   "jalali-moment": "^3.3.3",
   "jss-rtl": "^0.3.0",
   "mathjs": "^6.2.3",
+  "object-hash": "^2.0.1",
   "pathfinding": "^0.4.18",
   "paths-js": "^0.4.10",
   "react": "^16.10.2",
   "react-dom": "^16.12.0",
-  "react-froala-wysiwyg": "^3.0.6",
   "react-jss": "^10.0.0",
   "react-router-dom": "^5.1.2",
   "react-scripts": "3.2.0",
   "react-toastify": "^5.4.1",
-  "recharts": "^1.8.5",
-  "resize-observer-polyfill": "^1.5.1"
+  "resize-observer-polyfill": "^1.5.1",
+  "vazir-font": "^22.1.0"
 }
-
 
 
 export default withStyles(useStyles2)(Algorithm);
