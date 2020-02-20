@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 const Dashboard = (props) => {
   const classes = useStyles()
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
+  const [drawerOpen, setDrawerOpen] = React.useState(true)
   const handleDrawerOpen = (value) => {
     setDrawerOpen(value)
   }
