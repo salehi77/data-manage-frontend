@@ -20,7 +20,7 @@ import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 
-import { getClinics, addClinic, deleteClinic } from '../../actions/clinicActions';
+import actions from '../../actions/clinicActions';
 import { ConfirmDeleteDialog } from '../elements/MyDialogs'
 
 const useStyles = makeStyles(theme => ({
@@ -48,12 +48,10 @@ export default function Orders() {
   const [modals, setModals] = React.useState({ deleteClinic: null })
 
   React.useEffect(() => {
-    getClinics({}, { autoErrorControl: true })
+    actions.getClinics({}, { autoErrorControl: true })
       .then(data => {
-        console.log(data.result)
-
-        if (data.success) {
-          setDataRows(data.result);
+        if (data) {
+          setDataRows(data);
         } else {
           setDataRows([]);
           throw data
@@ -105,31 +103,35 @@ export default function Orders() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {dataRows.map(row => (
-            <TableRow key={row.id}>
-              <TableCell>{row.clinicName}</TableCell>
+          {
+            dataRows.map(row => (
 
-              <TableCell>{row.lastUpdate ? row.lastUpdate : '---'}</TableCell>
+              <TableRow key={row.id}>
+
+                <TableCell>{row.clinicName}</TableCell>
+
+                <TableCell>{row.modified_date ? row.modified_date : '---'}</TableCell>
 
 
-              <TableCell>
-                <Link to={`/dg/${row.id}`}>
-                  <AccountTreeOutlinedIcon color='secondary' />
-                </Link>
-              </TableCell>
+                <TableCell>
+                  <Link to={`/dg/${row.id}`}>
+                    <AccountTreeOutlinedIcon color='secondary' />
+                  </Link>
+                </TableCell>
 
-              <TableCell>
-                <IconButton
-                  onClick={() => {
-                    setModals({ ...modals, deleteClinic: { ...row } })
-                  }}
-                >
-                  <ClearIcon className='alizarin' />
-                </IconButton>
-              </TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => {
+                      setModals({ ...modals, deleteClinic: { ...row } })
+                    }}
+                  >
+                    <ClearIcon className='alizarin' />
+                  </IconButton>
+                </TableCell>
 
-            </TableRow>
-          ))}
+              </TableRow>
+            ))
+          }
         </TableBody>
       </Table>
 
@@ -179,7 +181,7 @@ export default function Orders() {
                   { from: nodes[0].id, to: nodes[1].id },
                 ]
 
-                addClinic(
+                actions.addClinic(
                   {
                     clinicName: texts.addRow,
                     diagramModel: { nodes, links },
@@ -189,8 +191,8 @@ export default function Orders() {
                 )
                   .then(data => {
                     setAddRowAnchor(null)
-                    if (data.success) {
-                      setDataRows([...dataRows, data.result])
+                    if (data) {
+                      setDataRows([...dataRows, data])
                     }
                   })
                   .catch(err => { })
@@ -213,11 +215,11 @@ export default function Orders() {
         onAccept={() => {
           setModals({ ...modals, deleteClinic: null })
 
+          const clinicID = modals.deleteClinic && modals.deleteClinic.id
 
-          deleteClinic({ clinicID: modals.deleteClinic && modals.deleteClinic.id }, { autoErrorControl: true })
+          actions.deleteClinic({ clinicID }, { autoErrorControl: true })
             .then(data => {
 
-              const clinicID = (data.result && data.result.id)
               const deletedIndex = dataRows.findIndex(dataRow => dataRow.id === clinicID)
 
               if (deletedIndex !== -1) {

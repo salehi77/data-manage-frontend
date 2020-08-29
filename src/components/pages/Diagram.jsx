@@ -19,9 +19,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded'
 import InfoIcon from '@material-ui/icons/Info'
 import CheckCircleRoundedIcon from '@material-ui/icons/CheckCircleRounded'
-
-import { getClinic, saveDiagram } from '../../actions/clinicActions'
-
+import actions from '../../actions/clinicActions'
 import { MyAppbar } from '../elements/MyAppbar'
 import { MyDrawer } from '../elements/MyDrawer'
 import LeftSidebar from '../elements/Diagram/LeftSidebar'
@@ -56,10 +54,10 @@ const Diagram = (props) => {
 
   React.useEffect(() => {
     const { params: { clinicID } } = props.match
-    getClinic({ clinicID }, { autoErrorControl: true })
+    actions.getClinic({ clinicID }, { autoErrorControl: true })
       .then(data => {
-        if (data.success && data.result) {
-          const diagramModel = JSON.parse(data.result.diagramModel)
+        if (data) {
+          const diagramModel = JSON.parse(data.diagramModel)
           setnodes(diagramModel.nodes ? diagramModel.nodes : [])
           setlinks(diagramModel.links ? diagramModel.links : [])
         }
@@ -86,13 +84,12 @@ const Diagram = (props) => {
       if (root) {
         let t = model2tree(root.id)
         const { params: { clinicID } } = props.match
-        saveDiagram(
+        actions.saveDiagram(
           { clinicID, diagramModel: { nodes, links }, diagramTree: { text: root.text, childs: t } },
           { autoErrorControl: true }
         ).then(data => {
-          if (data.success) {
+          if (data) {
             toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
-
           }
         }).catch(err => { })
       }
