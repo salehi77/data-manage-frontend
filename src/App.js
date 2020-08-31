@@ -1,25 +1,39 @@
-import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { Switch, Route, Redirect } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
-import Dashboard from './components/pages/Dashboard';
-import DescriptionEdit from './components/pages/DescriptionEdit';
-import Custom from './components/pages/Custom';
+import Dashboard from './components/pages/Dashboard'
+import Custom from './components/pages/Custom'
 import Diagram from './components/pages/Diagram'
-// import Algo from './components/pages/Algorithm'
+import Login from './components/pages/Login'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify'
+import userActions from './actions/userActions'
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   toast: {
     borderRadius: 5,
     fontFamily: 'XM Yekan',
-  }
-})
+  },
+}))
 
 
 function App(props) {
 
   const classes = useStyles()
+  const [status, setStatus] = useState('loading')
+
+  useEffect(() => {
+    userActions.refresh({})
+      .then(data => {
+        setStatus('login')
+      })
+      .catch(e => {
+        setStatus('notLogin')
+      })
+  }, [])
+
 
   return (
 
@@ -40,25 +54,56 @@ function App(props) {
         toastClassName={classes.toast}
       />
 
-      <Switch>
 
-        <Route exact path='/' component={Dashboard} />
 
-        <Route exact path='/dg/:clinicID' component={Diagram} />
+      {
+        status === 'loading'
+          ?
 
-        {/* <Route exact path='/algo/:id' component={Algo} /> */}
 
-        <Route path='/edit/:id' component={DescriptionEdit} />
+          <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+            style={{ minHeight: '100vh' }}
+          >
 
-        <Route path='/a' component={Custom} />
+            <Grid item xs={3}>
+              <CircularProgress />
+            </Grid>
+          </Grid>
 
-        <Route path='*'>not found</Route>
 
-      </Switch>
+          :
+          <>
 
-    </div>
+            <Switch>
 
-  );
+              <Route exact path='/dashboard' component={Dashboard} />
+
+              <Route exact path='/dg/:clinicID' component={Diagram} />
+
+
+              <Route path='/a' component={Custom} />
+
+              <Route path='/login' component={Login} />
+
+
+              < Route path='*'>not found</Route>
+
+            </Switch>
+
+            <Redirect exact from='/' to={status === 'login' ? '/dashboard' : '/login'} />
+
+          </>
+      }
+
+
+    </div >
+
+  )
 }
 
-export default App;
+export default App

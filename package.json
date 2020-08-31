@@ -16,6 +16,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
     "react-toastify": "^5.4.1",
+    "validate.js": "^0.13.1",
     "vazir-font": "^22.1.0"
   },
   "scripts": {

@@ -1,26 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 import hash from 'object-hash'
 
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Popover from '@material-ui/core/Popover';
-import AddIcon from '@material-ui/icons/Add';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
-import ClearIcon from '@material-ui/icons/Clear';
-
-import actions from '../../actions/clinicActions';
+import { makeStyles } from '@material-ui/core/styles'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import FormControl from '@material-ui/core/FormControl'
+import TextField from '@material-ui/core/TextField'
+import Popover from '@material-ui/core/Popover'
+import AddIcon from '@material-ui/icons/Add'
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined'
+import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined'
+import ClearIcon from '@material-ui/icons/Clear'
+import clinicActions from '../../actions/clinicActions'
 import { ConfirmDeleteDialog } from '../elements/MyDialogs'
 
 const useStyles = makeStyles(theme => ({
@@ -32,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     width: 200
   },
-}));
+}))
 
 
 
@@ -40,25 +39,25 @@ const useStyles = makeStyles(theme => ({
 
 
 export default function Orders() {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const [dataRows, setDataRows] = React.useState([]);
-  const [addRowAnchor, setAddRowAnchor] = React.useState(null);
-  const [texts, setTexts] = React.useState({ addRow: '' });
+  const [dataRows, setDataRows] = React.useState([])
+  const [addRowAnchor, setAddRowAnchor] = React.useState(null)
+  const [texts, setTexts] = React.useState({ addRow: '' })
   const [modals, setModals] = React.useState({ deleteClinic: null })
 
   React.useEffect(() => {
-    actions.getClinics({}, { autoErrorControl: true })
+    clinicActions.getClinics({}, { autoErrorControl: true })
       .then(data => {
         if (data) {
-          setDataRows(data);
+          setDataRows(data)
         } else {
-          setDataRows([]);
+          setDataRows([])
           throw data
         }
       })
-      .catch(error => { });
-  }, []);
+      .catch(error => { })
+  }, [])
 
   return (
     <>
@@ -82,6 +81,25 @@ export default function Orders() {
             <AddIcon />
           </IconButton>
         </div>
+
+        <Button
+          onClick={() => {
+            clinicActions.getClinics({})
+              .then(data => {
+                if (data) {
+                  setDataRows(data)
+                } else {
+                  setDataRows([])
+                  throw data
+                }
+              })
+              .catch(error => {
+                console.log('here')
+              })
+          }}
+        >
+          Refresh
+        </Button>
 
       </Toolbar>
 
@@ -181,7 +199,7 @@ export default function Orders() {
                   { from: nodes[0].id, to: nodes[1].id },
                 ]
 
-                actions.addClinic(
+                clinicActions.addClinic(
                   {
                     clinicName: texts.addRow,
                     diagramModel: { nodes, links },
@@ -217,7 +235,7 @@ export default function Orders() {
 
           const clinicID = modals.deleteClinic && modals.deleteClinic.id
 
-          actions.deleteClinic({ clinicID }, { autoErrorControl: true })
+          clinicActions.deleteClinic({ clinicID }, { autoErrorControl: true })
             .then(data => {
 
               const deletedIndex = dataRows.findIndex(dataRow => dataRow.id === clinicID)
@@ -233,5 +251,5 @@ export default function Orders() {
 
 
     </>
-  );
+  )
 }

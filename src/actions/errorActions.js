@@ -16,6 +16,12 @@ export const errorControl = error => {
     case 400:
       toast.error('درخواست بد ارسال شده است');
       break;
+    case 401:
+      if (error.response.data.code === 'token_not_valid') {
+        return new Error('token_not_valid')
+      }
+      toast.error('کاربری با این مشخصات یافت نشد');
+      break;
     case 404:
       toast.error('درخواست موردنظر در سرور پیدا نشد');
       break;
