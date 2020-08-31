@@ -35,7 +35,7 @@ export default {
 
     saveDiagram: (id, diagramModel, diagramTree) => {
       return axios
-        .put(serverURL + 'clinic/', { id, diagramModel: JSON.stringify(diagramModel), diagramTree: JSON.stringify(diagramTree) })
+        .patch(`${serverURL}clinic/${id}/`, { diagramModel: JSON.stringify(diagramModel), diagramTree: JSON.stringify(diagramTree) })
         .then(res => {
           return res.data
         })

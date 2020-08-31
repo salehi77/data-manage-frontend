@@ -47,7 +47,7 @@ export default function Orders() {
   const [modals, setModals] = React.useState({ deleteClinic: null })
 
   React.useEffect(() => {
-    clinicActions.getClinics({}, { autoErrorControl: true })
+    clinicActions.getClinics({})
       .then(data => {
         if (data) {
           setDataRows(data)
@@ -82,26 +82,50 @@ export default function Orders() {
           </IconButton>
         </div>
 
+
+
+
+
+
+
+
+
+
+
         <Button
           onClick={() => {
-            clinicActions.getClinics({})
+
+
+            clinicActions.saveDiagram(
+              {
+                clinicID: 10,
+                diagramModel: {
+                  nodes: [
+                    { "id": "c9641efbbf197ca62434d76cb87f3e0ea8bd04ac", "text": "برای وارد کردن متن دوبار کلیک کنید", "left": 730, "top": 300, "height": 100, "root": true },
+                    { "id": "bfce8099730d4a5a9125d846658d866cd241fb6b", "text": "برای وارد کردن متن دوبار کلیک کنید", "left": 400, "top": 120, "height": 100 }
+                  ],
+                  links: [{ "from": "c9641efbbf197ca62434d76cb87f3e0ea8bd04ac", "to": "bfce8099730d4a5a9125d846658d866cd241fb6b" }]
+                },
+                diagramTree: { "text": "برای وارد کردن متن دوبار کلیک کنید", "childs": [{ "text": "برای وارد کردن متن دوبار کلیک کنید", "childs": [] }] }
+              },
+            )
               .then(data => {
                 if (data) {
-                  setDataRows(data)
-                } else {
-                  setDataRows([])
-                  throw data
+                  console.log(data)
+                  // toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
                 }
               })
-              .catch(error => {
-                console.log('here')
-              })
+              .catch(err => { })
+
+
           }}
         >
           Refresh
         </Button>
 
       </Toolbar>
+
+
 
 
 

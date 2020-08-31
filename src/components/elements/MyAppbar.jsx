@@ -11,6 +11,9 @@ import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import MenuIcon from '@material-ui/icons/Menu'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import userActions from '../../actions/userActions'
+import { useHistory } from 'react-router-dom'
 
 
 const useStyles = makeStyles(theme => ({
@@ -35,8 +38,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export const MyAppbar = (props) => {
+  const history = useHistory()
   const classes = useStyles()
-
 
   return (
 
@@ -65,7 +68,20 @@ export const MyAppbar = (props) => {
           }}
         >
           داشبورد
-          </Typography>
+        </Typography>
+        <IconButton
+          edge='start'
+          color='inherit'
+          onClick={() => {
+            userActions.logout()
+              .then(() => {
+                history.push('/login')
+              })
+              .catch(e => { })
+          }}
+        >
+          <ExitToAppIcon />
+        </IconButton>
       </Toolbar>
     </AppBar>
   )

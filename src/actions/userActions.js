@@ -42,4 +42,18 @@ export default
     },
 
 
+    logout: (data, options = { autoErrorControl: true }) => {
+      return new Promise((resolve, reject) => {
+        try {
+          localStorage.removeItem('token')
+          delete axios.defaults.headers.common['Authorization']
+          resolve()
+        }
+        catch (e) {
+          reject()
+        }
+      })
+    },
+
+
   }
