@@ -93,6 +93,9 @@ const Login = () => {
         <Typography component='h1' variant='h5'>
           ورود به سیستم
         </Typography>
+        <Typography variant="caption" gutterBottom>
+          username: admin, password: 123
+        </Typography>
         <form className={classes.form} noValidate onSubmit={submitLogin} >
           <TextField
             error={Boolean(controlForm.values.username && controlForm.errors.username)}

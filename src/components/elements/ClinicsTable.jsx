@@ -21,6 +21,7 @@ import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined'
 import ClearIcon from '@material-ui/icons/Clear'
 import clinicActions from '../../actions/clinicActions'
 import { ConfirmDeleteDialog } from '../elements/MyDialogs'
+import moment from 'jalali-moment'
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -92,10 +93,8 @@ export default function Orders() {
 
 
 
-        <Button
+        {/* <Button
           onClick={() => {
-
-
             clinicActions.saveDiagram(
               {
                 clinicID: 10,
@@ -112,27 +111,15 @@ export default function Orders() {
               .then(data => {
                 if (data) {
                   console.log(data)
-                  // toast.success(<div style={{ display: 'flex' }}><CheckCircleRoundedIcon style={{ marginLeft: 5 }} /> ذخیره شد </div>)
                 }
               })
               .catch(err => { })
-
-
           }}
         >
           Refresh
-        </Button>
+        </Button> */}
 
       </Toolbar>
-
-
-
-
-
-
-
-
-
 
 
       <Table size='small'>
@@ -152,8 +139,7 @@ export default function Orders() {
 
                 <TableCell>{row.clinicName}</TableCell>
 
-                <TableCell>{row.modified_date ? row.modified_date : '---'}</TableCell>
-
+                <TableCell>{row.modified_date ? moment(row.modified_date).locale('fa').fromNow() : '---'}</TableCell>
 
                 <TableCell>
                   <Link to={`/dg/${row.id}`}>
